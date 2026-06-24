@@ -1,0 +1,80 @@
+/* ==========================================================================
+   Stats Page
+   ========================================================================== */
+.cps-stats {
+    &__loading {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        padding: 48px 0;
+        color: #757575;
+        justify-content: center;
+    }
+
+    &__empty-inline {
+        color: #ccc;
+    }
+
+
+    /* --------------------------------------------------------------------------
+   Stat card grid
+   -------------------------------------------------------------------------- */
+
+    &__grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+        gap: 12px;
+        margin: 20px 0;
+    }
+
+    .cps-stat-card {
+        background: #fff;
+        border: 1px solid #e0e0e0;
+        border-radius: 8px;
+        padding: 16px;
+    }
+
+    .cps-stat-value {
+        font-size: 26px;
+        font-weight: 700;
+        line-height: 1.2;
+    }
+
+    .cps-stat-label {
+        font-size: 12px;
+        color: #50575e;
+        margin-top: 4px;
+        font-weight: 500;
+    }
+
+    .cps-stat-sub {
+        font-size: 11px;
+        color: #999;
+        margin-top: 2px;
+    }
+
+    /* --------------------------------------------------------------------------
+   Section wrapper (sparkline / bar chart / tables)
+   -------------------------------------------------------------------------- */
+
+    &__section {
+        background: #fff;
+        border: 1px solid #e0e0e0;
+        border-radius: 8px;
+        padding: 20px;
+        margin-bottom: 16px;
+    }
+
+    &__section h3 {
+        margin: 0 0 14px;
+        font-size: 14px;
+        font-weight: 600;
+        color: #1e1e1e;
+    }
+
+    @media screen and (max-width: 782px) {
+        &__grid {
+            grid-template-columns: repeat(2, 1fr);
+        }
+    }
+}

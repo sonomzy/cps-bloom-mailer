@@ -1,0 +1,115 @@
+
+// ── Table ─────────────────────────────────────────────────────────────────────
+.cps-automation-row {
+    &__icon {
+        font-size: 20px;
+        width: 40px;
+    }
+
+    &__name {
+        strong {
+            display: block;
+            font-weight: 500;
+        }
+    }
+
+    &__type {
+        display: block;
+        font-size: 12px;
+        color: #757575;
+        margin-top: 2px;
+    }
+
+    &__actions {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        justify-content: flex-end;
+
+        // Shrink the toggle label gap
+        .components-toggle-control {
+            margin-bottom: 0;
+
+            .components-base-control__field {
+                margin-bottom: 0;
+            }
+        }
+    }
+}
+
+// ── Create modal ──────────────────────────────────────────────────────────────
+
+.cps-automation-type-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 12px;
+    padding: 24px;
+}
+
+.cps-automation-type-card {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 6px;
+    padding: 16px;
+    border: 2px solid #e0e0e0;
+    border-radius: 6px;
+    background: #fff;
+    cursor: pointer;
+    text-align: left;
+    transition: border-color 0.15s, background 0.15s;
+
+    &:hover {
+        border-color: #aaa;
+    }
+
+    &.is-selected {
+        border-color: var(--wp-admin-theme-color, #3858e9);
+        background: #f0f3ff;
+    }
+
+    &__icon {
+        font-size: 24px;
+    }
+
+    &__label {
+        font-size: 13px;
+        font-weight: 600;
+        color: #1e1e1e;
+    }
+
+    &__description {
+        font-size: 12px;
+        color: #757575;
+        line-height: 1.4;
+    }
+}
+
+.cps-automation-selected-type {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 16px 24px;
+    border-bottom: 1px solid #e0e0e0;
+    background: #f9f9f9;
+
+    &__icon {
+        font-size: 28px;
+    }
+
+    strong {
+        display: block;
+        font-size: 14px;
+    }
+
+    p {
+        margin: 2px 0 0;
+        font-size: 12px;
+        color: #757575;
+    }
+
+    // Push the Change button to the right
+    .components-button {
+        margin-left: auto;
+    }
+}

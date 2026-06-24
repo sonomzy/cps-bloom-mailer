@@ -1,0 +1,268 @@
+#wpcontent {
+    padding: 0;
+    background-color: #fff;
+}
+
+#cps-bloom-mailer-settings {
+
+    .tab-header {
+        display: flex;
+        gap: 20px;
+        flex-wrap: wrap;
+        border-bottom: 1px solid #ddd;
+        margin-bottom: 20px;
+        align-items: center;
+        background: #fff;
+        padding: 0 24px;
+
+        button.tab-button {
+            padding: 10px 14px;
+            border: none;
+            background: transparent;
+            cursor: pointer;
+            border-bottom: 2px solid transparent;
+            font-size: 13px;
+            transition: color 0.15s;
+            white-space: nowrap;
+
+            &:hover {
+                color: #1e1e1e;
+            }
+
+            &.active {
+                color: #1e1e1e;
+                font-weight: 600;
+                border-bottom: 2px solid #1e1e1e;
+            }
+        }
+
+        .components-button.is-primary {
+            margin-left: auto;
+        }
+    }
+
+    // ─── Page layout ────────────────────────────────────────────────────────
+    .cps-bloom-mailer-page {
+        max-width: 700px;
+        padding: 24px;
+
+        &__header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 32px;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        &__title {
+            font-size: 20px;
+            font-weight: 600;
+            margin: 0 0 4px;
+            padding: 0;
+            text-transform: capitalize;
+        }
+
+        &__subtitle {
+            color: #757575;
+            font-size: 13px;
+            margin: 0;
+        }
+    }
+
+    // ─── Settings card ──────────────────────────────────────────────────────
+    .settings-card {
+        background: #fff;
+        border: 1px solid #e0e0e0;
+        border-radius: 8px;
+        overflow: hidden;
+        margin-bottom: 16px;
+
+
+        &__section {
+            display: flex;
+            gap: 16px;
+            padding: 20px 24px;
+            border-bottom: 1px solid #f0f0f0;
+            flex-direction: column;
+
+            &:last-child {
+                border-bottom: none;
+            }
+
+            // ─── Field grid helpers ─────────────────────────────────────────────────
+            .fields-row {
+                display: grid;
+                gap: 16px;
+
+                &--2 {
+                    grid-template-columns: 1fr 1fr;
+                }
+
+                &--3 {
+                    grid-template-columns: 2fr 1fr 1fr;
+                }
+            }
+        }
+
+        &__label {
+            font-size: 11px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.06em;
+            color: #757575;
+            margin-bottom: 16px;
+        }
+    }
+
+    // // ─── WP component overrides ─────────────────────────────────────────────
+
+    // // shared input/select base
+    // .components-text-control__input,
+    // .components-select-control__input,
+    // .components-input-control__input {
+    //     height: 36px !important;
+    //     padding: 0 10px !important;
+    //     font-size: 13px !important;
+    //     border: 1px solid #ddd !important;
+    //     border-radius: 6px !important;
+    //     box-shadow: none !important;
+    //     transition: border-color 0.15s !important;
+
+    //     &:focus {
+    //         border-color: #1e1e1e !important;
+    //         box-shadow: none !important;
+    //     }
+    // }
+
+    // // textarea (if used)
+    // .components-textarea-control__input {
+    //     font-size: 13px !important;
+    //     border: 1px solid #ddd !important;
+    //     border-radius: 6px !important;
+    //     box-shadow: none !important;
+    //     padding: 8px 10px !important;
+
+    //     &:focus {
+    //         border-color: #1e1e1e !important;
+    //         box-shadow: none !important;
+    //     }
+    // }
+
+    // // number control 
+    // .components-number-control {
+    //     .components-input-control__input {
+    //         height: 36px !important;
+    //     }
+    // }
+
+    // // labels
+    // .components-base-control__label,
+    // .components-input-control__label {
+    //     font-size: 13px !important;
+    //     font-weight: 600 !important;
+    //     color: #1e1e1e !important;
+    //     margin-bottom: 6px !important;
+    // }
+
+    // // help text
+    // .components-base-control__help {
+    //     font-size: 12px !important;
+    //     color: #757575 !important;
+    //     margin-top: 5px !important;
+    // }
+
+    // // select control wrapper
+    // .components-select-control {
+    //     .components-input-control__suffix {
+    //         padding-right: 4px;
+    //     }
+    // }
+
+    // // PanelBody used in advanced tab
+    // .components-panel__body {
+    //     border: 1px solid #e0e0e0 !important;
+    //     border-radius: 8px !important;
+    //     margin-bottom: 16px !important;
+    //     overflow: hidden;
+
+    //     .components-panel__body-title {
+    //         border-bottom: 1px solid #f0f0f0;
+
+    //         .components-panel__body-toggle {
+    //             font-size: 13px !important;
+    //             font-weight: 600 !important;
+    //             padding: 14px 16px !important;
+    //         }
+    //     }
+
+    //     .components-panel__body-content {
+    //         padding: 16px !important;
+    //     }
+    // }
+
+    // // secondary buttons
+    // .components-button.is-secondary {
+    //     height: 34px;
+    //     padding: 0 14px;
+    //     font-size: 13px;
+    //     border-radius: 6px;
+    //     border: 1px solid #ddd;
+    //     box-shadow: none;
+
+    //     &:hover {
+    //         border-color: #1e1e1e;
+    //         box-shadow: none;
+    //     }
+
+    //     &.is-destructive {
+    //         border-color: #cc1818;
+    //         color: #cc1818;
+
+    //         &:hover {
+    //             background: #fef2f2;
+    //         }
+    //     }
+    // }
+
+    // // BaseControl group label (wraps SMTP/SES sections)
+    // .components-base-control {
+    //     >.components-base-control__field {
+    //         >.components-base-control__label {
+    //             font-size: 12px !important;
+    //             font-weight: 600 !important;
+    //             text-transform: uppercase !important;
+    //             letter-spacing: 0.05em !important;
+    //             color: #757575 !important;
+    //             margin-bottom: 12px !important;
+    //         }
+    //     }
+    // }
+
+
+    // ─── Mobile ─────────────────────────────────────────────────────────────
+    @media screen and (max-width: 782px) {
+        .tab-header {
+            padding: 0 12px;
+            gap: 0;
+
+            button {
+                padding: 10px 12px;
+                font-size: 12px;
+            }
+        }
+
+        .cps-bloom-mailer-page {
+            padding: 0 12px 32px;
+        }
+
+        .fields-row--2,
+        .fields-row--3 {
+            grid-template-columns: 1fr;
+        }
+
+        .settings-card__section {
+            padding: 16px;
+        }
+    }
+}
