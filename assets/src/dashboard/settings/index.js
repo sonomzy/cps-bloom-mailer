@@ -138,13 +138,14 @@ const MailerSettings = ({ settings, handleChange }) => {
                         ]}
                         onChange={(value) => handleChange('ses_region', value)}
                     />
-                    <TextControl
-                        label={__('Bounce Handler URL', 'cps-bloom-mailer')}
-                        type="readOnly"
-                        help={__('Please use this bounce handler url in your Amazon SES + SNS settings', 'cps-bloom-mailer')}
-                        value={settings.ses_secret || ''}
-                        onChange={(value) => handleChange('ses_secret', value)}
-                    />
+                    <div className="fields-row">
+                        <TextControl
+                            label={__('Bounce Handler URL', 'cps-bloom-mailer')}
+                            help={__('Please use this bounce handler url in your Amazon SES + SNS settings', 'cps-bloom-mailer')}
+                            value={window.cbmData.hook || ''}
+                            readonly={true}
+                        />
+                    </div>
                 </div>
             )}
 

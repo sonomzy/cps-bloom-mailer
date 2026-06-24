@@ -1,0 +1,99 @@
+{
+  "$schema": "https://schemas.wp.org/trunk/block.json",
+  "apiVersion": 3,
+  "name": "cps-bloom-mailer/socials",
+  "title": "Socials",
+  "icon": "groups",
+  "category": "widgets",
+  "keywords": [
+    "links"
+  ],
+  "allowedBlocks": [
+    "cps-bloom-mailer/social"
+  ],
+  "description": "Display social Icons in your email campaign.",
+  "attributes": {
+    "iconBackgroundColor": {
+      "type": "string"
+    },
+    "background": {
+      "type": "string"
+    },
+    "iconColor": {
+      "type": "string",
+      "default": "black"
+    },
+    "iconBackgroundColorValue": {
+      "type": "string"
+    },
+    "iconColorValue": {
+      "type": "string",
+      "default": "black"
+    },
+    "showLabels": {
+      "type": "boolean",
+      "default": false
+    },
+    "size": {
+      "type": "string",
+      "default": "normal"
+    }
+  },
+  "providesContext": {
+    "showLabels": "showLabels",
+    "iconColor": "iconColor",
+    "iconColorValue": "iconColorValue",
+    "iconBackgroundColor": "iconBackgroundColor",
+    "iconBackgroundColorValue": "iconBackgroundColorValue"
+  },
+  "supports": {
+    "align": [
+      "left",
+      "center",
+      "right"
+    ],
+    "anchor": true,
+    "html": false,
+    "inserter": false,
+    "__experimentalExposeControlsToChildren": true,
+    "layout": {
+      "allowSwitching": false,
+      "allowInheriting": false,
+      "allowVerticalAlignment": false,
+      "default": {
+        "type": "flex"
+      }
+    },
+    "interactivity": {
+      "clientNavigation": true
+    },
+    "spacing": {
+      "padding": true,
+      "units": [
+        "px"
+      ],
+      "__experimentalDefaultControls": {
+        "padding": false
+      }
+    },
+    "contentRole": true,
+    "listView": true
+  },
+  "styles": [
+    {
+      "name": "default",
+      "label": "Default",
+      "isDefault": true
+    },
+    {
+      "name": "logos-only",
+      "label": "Logos Only"
+    },
+    {
+      "name": "pill-shape",
+      "label": "Pill Shape"
+    }
+  ],
+  "editorScript": "cps-bloom-mailer-editor",
+  "textdomain": "cps-bloom-mailer"
+}

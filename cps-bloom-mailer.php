@@ -3,7 +3,7 @@
 /**
  * Plugin Name: Bloom Mailer
  * Plugin URI:  https://chicpixies.com
- * Description: Email marketing for WordPress. Supports Amazon SES and any SMTP provider.
+ * Description: Email marketing for WordPress. Supports Amazon SES and any SMTP provider Requires the Bloom by Chicpixies plugin.
  * Version:     1.0.0
  * Author:      Chicpixies
  * Author URI:  https://chicpixies.com

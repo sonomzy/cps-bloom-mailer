@@ -1,0 +1,65 @@
+{
+  "$schema": "https://schemas.wp.org/trunk/block.json",
+  "apiVersion": 3,
+  "name": "cps-bloom-mailer/product",
+  "title": "Products",
+  "category": "widgets",
+  "icon": "columns",
+  "description": "Display products in your email campaign.",
+  "supports": {
+    "html": false,
+    "inserter": true
+  },
+  "attributes": {
+    "ids": {
+      "type": "array",
+      "default": []
+    },
+    "count": {
+      "type": "number",
+      "default": 2
+    },
+    "columns": {
+      "type": "number",
+      "default": 2
+    },
+    "orderBy": {
+      "type": "string",
+      "default": "date"
+    },
+    "order": {
+      "type": "string",
+      "default": "asc"
+    },
+    "categories": {
+      "type": "array",
+      "default": []
+    },
+    "saleOnly": {
+      "type": "boolean",
+      "default": false
+    },
+    "showImage": {
+      "type": "boolean",
+      "default": true
+    },
+    "showButton": {
+      "type": "boolean",
+      "default": false
+    },
+    "buttonText": {
+      "type": "string",
+      "default": "Shop Now"
+    },
+    "buttonColor": {
+      "type": "string",
+      "default": "#000000"
+    },
+    "buttonTextColor": {
+      "type": "string",
+      "default": "#ffffff"
+    }
+  },
+  "editorScript": "cps-bloom-mailer-editor",
+  "textdomain": "cps-bloom-mailer"
+}

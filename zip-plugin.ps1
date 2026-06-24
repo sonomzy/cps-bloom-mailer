@@ -1,4 +1,4 @@
-# Zip plugin for distribution
+# Zip cps-bloom-mailer for distribution
 $pluginName = "cps-bloom-mailer"
 $currentDir = Get-Location
 $distDir = Join-Path $currentDir "dist"
@@ -11,12 +11,21 @@ $excludeDirs = @(
 
 $excludeFiles = @(
     "composer.json", "composer.lock", "package.json", "package-lock.json",
-    "webpack.config.js", "zip-plugin.ps1", "admin.js", "optin.js", 
-    "simpleselect.js", "popup.js", "editor.js", "restrict.js",
-    ".gitignore", ".DS_Store", "Thumbs.db", ".antigravityignore"
+    "webpack.config.js", "zip-plugin.ps1", ".gitignore", ".DS_Store",
+    "Thumbs.db", ".antigravityignore",
+    # Action Scheduler dev files
+    "Gruntfile.js", "phpcs.xml", "codecov.yml", ".editorconfig",
+    ".gitattributes"
 )
 
 $excludeExtensions = @(".log", ".md", ".zip")
+
+# Path-specific exclusions (scoped to Action Scheduler only)
+$excludePathFragments = @(
+    "libraries\action-scheduler\.github",
+    "libraries\action-scheduler\tests",
+    "libraries\action-scheduler\docs"
+)
 
 # Create dist and temp directory
 if (Test-Path $distDir) { Remove-Item -Recurse -Force $distDir }
@@ -32,6 +41,11 @@ Get-ChildItem -Path $currentDir -Recurse | ForEach-Object {
         if ($item.FullName -like "*\$dir\*" -or $item.FullName -like "*\$dir") {
             return
         }
+    }
+
+    # Skip path-specific fragments
+    foreach ($fragment in $excludePathFragments) {
+        if ($item.FullName -like "*\$fragment*") { return }
     }
 
     # Skip excluded file names

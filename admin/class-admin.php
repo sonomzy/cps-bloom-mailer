@@ -117,6 +117,7 @@ class Admin
 			'id' => $_REQUEST['c'] ?? 0,
 			'restUrl' => rest_url('cps/v1/mailer'),
 			'nonce'   => wp_create_nonce('wp_rest'),
+			'hook' => home_url('/cps-bloom-mailer/ses-webhook/')
 		);
 
 		wp_localize_script('cps-bloom-mailer-editor', 'cbmData', apply_filters('cps_mailer_localize_campaign_data', $localize_data));
@@ -135,30 +136,6 @@ class Admin
 		}
 
 		echo $this->campaigns_page();
-		return;
-		include_once CPS_BLOOM_MAILER_DIR . 'admin/views/campaigns-list.php';
-		$table = new Campaigns_Table();
-		$table->prepare_items();
-		$url = add_query_arg(['campaign' => 0, 'action' => 'new']);
-
-?>
-		<div class="wrap">
-			<h1 class="wp-heading-inline"><?php esc_html_e('Campaigns', 'cps-bloom-mailer'); ?></h1>
-			<button type="button" class="button-secondary" id="export-campaign"><?php esc_html_e('Export all CSV', 'cps-bloom-mailer'); ?></button>
-			<a class="button-secondary" href="<?php echo esc_url($url); ?>" class="page-title-action">
-				<?php esc_html_e('Add New', 'cps-bloom-mailer'); ?>
-			</a>
-			<hr class="wp-header-end">
-
-			<form method="post" id="campaign-filter">
-				<?php
-				// Search box
-				$table->search_box(__('Search subscribers', 'cps-bloom'), 'subscriber');
-				$table->display();
-				?>
-			</form>
-		</div>
-<?php
 	}
 
 	private function campaign_edit()

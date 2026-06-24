@@ -1,0 +1,46 @@
+{
+  "$schema": "https://schemas.wp.org/trunk/block.json",
+  "apiVersion": 3,
+  "name": "cps-bloom-mailer/social",
+  "title": "Social Link",
+  "icon": "groups",
+  "category": "widgets",
+  "parent": [
+    "cps-bloom-mailer/socials"
+  ],
+  "description": "Display an icon linking to a social profile or site.",
+  "attributes": {
+    "url": {
+      "type": "string",
+      "role": "content"
+    },
+    "service": {
+      "type": "string"
+    },
+    "label": {
+      "type": "string",
+      "role": "content"
+    },
+    "rel": {
+      "type": "string"
+    }
+  },
+  "usesContext": [
+    "showLabels",
+    "iconColor",
+    "iconColorValue",
+    "iconBackgroundColor",
+    "iconBackgroundColorValue"
+  ],
+  "supports": {
+    "anchor": true,
+    "reusable": false,
+    "html": false,
+    "inserter": false,
+    "interactivity": {
+      "clientNavigation": true
+    }
+  },
+  "editorScript": "cps-bloom-mailer-editor",
+  "textdomain": "cps-bloom-mailer"
+}
