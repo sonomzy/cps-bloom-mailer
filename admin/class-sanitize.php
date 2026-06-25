@@ -51,16 +51,16 @@ class Sanitize
     public static function design($design)
     {
         $sanitize = array(
-            'bodyBg' => sanitize_hex_color($design['bodyBg'] ?? '#f5f5f5'),
+            'bodyBg' => sanitize_text_field($design['bodyBg'] ?? '#f5f5f5'),
             'containerWidth' => absint($design['containerWidth'] ?? 600),
-            'containerBg' => sanitize_hex_color($design['containerBg'] ?? '#ffffff'),
+            'containerBg' => sanitize_text_field($design['containerBg'] ?? '#ffffff'),
             'padding' => self::spacing($design['padding'] ?? ['top' => '30px', 'right' => '30px', 'bottom' => '30px', 'left' => '30px']),
             'borderRadius' => absint($design['borderRadius'] ?? 8),
             'fontFamily' => sanitize_text_field($design['fontFamily'] ?? 'system'),
             'lineHeight' => absint($design['lineHeight'] ?? 1.2),
             'fontSize' => absint($design['fontSize'] ?? 16),
-            'textColor' => sanitize_hex_color($design['textColor'] ?? '#333333'),
-            'linkColor' => sanitize_hex_color($design['linkColor'] ?? '#0073aa')
+            'textColor' => sanitize_text_field($design['textColor'] ?? '#333333'),
+            'linkColor' => sanitize_text_field($design['linkColor'] ?? '#0073aa')
         );
         return wp_json_encode($sanitize, JSON_UNESCAPED_UNICODE);
     }
@@ -82,8 +82,8 @@ class Sanitize
                     ? $header['settings']['alignment']
                     : 'center',
                 'fontFamily' => sanitize_text_field($header['settings']['fontFamily'] ?? 'system'),
-                'textColor' => sanitize_hex_color($header['settings']['textColor'] ?? '#333333'),
-                'background' => sanitize_hex_color($header['settings']['background'] ?? 'transparent'),
+                'textColor' => sanitize_text_field($header['settings']['textColor'] ?? '#333333'),
+                'background' => sanitize_text_field($header['settings']['background'] ?? ''),
                 'titleSize' => sanitize_text_field($header['settings']['titleSize'] ?? '28px'),
                 'fontSize' => sanitize_text_field($header['settings']['fontSize'] ?? '14px'),
                 'showDescription' => isset($header['settings']['showDescription'])
@@ -120,8 +120,8 @@ class Sanitize
                             'level' => in_array($block['settings']['level'] ?? 0, [1, 2, 3, 4, 5, 6])
                                 ? (int)$block['settings']['level']
                                 : 2,
-                            'background' => sanitize_hex_color($block['settings']['background'] ?? '#ffffff'),
-                            'textColor' => sanitize_hex_color($block['settings']['textColor'] ?? '#333333'),
+                            'background' => sanitize_text_field($block['settings']['background'] ?? '#ffffff'),
+                            'textColor' => sanitize_text_field($block['settings']['textColor'] ?? '#333333'),
                             'padding' => self::spacing($block['settings']['padding'] ?? []),
                             'alignment' => in_array($block['settings']['alignment'] ?? '', ['left', 'center', 'right'])
                                 ? $block['settings']['alignment']
@@ -136,8 +136,8 @@ class Sanitize
                         'type' => 'text',
                         'content' => self::html_content($block['content'] ?? []),
                         'settings' => array(
-                            'background' => sanitize_hex_color($block['settings']['background'] ?? '#ffffff'),
-                            'textColor' => sanitize_hex_color($block['settings']['textColor'] ?? '#333333'),
+                            'background' => sanitize_text_field($block['settings']['background'] ?? '#ffffff'),
+                            'textColor' => sanitize_text_field($block['settings']['textColor'] ?? '#333333'),
                             'padding' => self::spacing($block['settings']['padding'] ?? []),
                             'alignment' => in_array($block['settings']['alignment'] ?? '', ['left', 'center', 'right'])
                                 ? $block['settings']['alignment']
@@ -153,8 +153,8 @@ class Sanitize
                         'content' => self::html_content($block['content'] ?? []),
                         'settings' => array(
                             'href' => sanitize_text_field($block['settings']['href'] ?? '#'),
-                            'background' => sanitize_hex_color($block['settings']['background'] ?? '#0073aa'),
-                            'textColor' => sanitize_hex_color($block['settings']['textColor'] ?? '#ffffff'),
+                            'background' => sanitize_text_field($block['settings']['background'] ?? '#0073aa'),
+                            'textColor' => sanitize_text_field($block['settings']['textColor'] ?? '#ffffff'),
                             'borderRadius' => sanitize_text_field($block['settings']['borderRadius'] ?? '5px'),
                             'padding' => self::spacing($block['settings']['padding'] ?? [], ['top' => '12px', 'right' => '30px', 'bottom' => '12px', 'left' => '30px']),
                             'spacing' => self::spacing($block['settings']['spacing'] ?? ['top' => '30px', 'bottom' => '30px']),
@@ -171,7 +171,7 @@ class Sanitize
                         'id' => sanitize_key($block['id'] ?? uniqid('divider_')),
                         'type' => 'divider',
                         'settings' => array(
-                            'color' => sanitize_hex_color($block['settings']['color'] ?? '#e0e0e0'),
+                            'color' => sanitize_text_field($block['settings']['color'] ?? '#e0e0e0'),
                             'height' => sanitize_text_field($block['settings']['height'] ?? '1px'),
                             'spacing' => self::spacing($block['settings']['spacing'] ?? [], ['top' => '20px', 'bottom' => '20px']),
                         ),
@@ -217,8 +217,8 @@ class Sanitize
                             'showButton' => isset($block['settings']['showButton']) ? (bool)$block['settings']['showButton'] : true,
                             'showImage' => isset($block['settings']['showImage']) ? (bool)$block['settings']['showImage'] : true,
                             'buttonText' => sanitize_text_field($block['settings']['buttonText'] ?? 'Read More'),
-                            'background' => sanitize_hex_color($block['settings']['background'] ?? '#ffffff'),
-                            'textColor' => sanitize_hex_color($block['settings']['textColor'] ?? '#333333'),
+                            'background' => sanitize_text_field($block['settings']['background'] ?? '#ffffff'),
+                            'textColor' => sanitize_text_field($block['settings']['textColor'] ?? '#333333'),
                             'padding' => self::spacing($block['settings']['padding'] ?? []),
 
                         ),
@@ -241,8 +241,8 @@ class Sanitize
                             'showButton' => isset($block['settings']['showButton']) ? (bool)$block['settings']['showButton'] : true,
                             'showImage' => isset($block['settings']['showImage']) ? (bool)$block['settings']['showImage'] : true,
                             'buttonText' => sanitize_text_field($block['settings']['buttonText'] ?? 'Read More'),
-                            'background' => sanitize_hex_color($block['settings']['background'] ?? '#ffffff'),
-                            'textColor' => sanitize_hex_color($block['settings']['textColor'] ?? '#333333'),
+                            'background' => sanitize_text_field($block['settings']['background'] ?? '#ffffff'),
+                            'textColor' => sanitize_text_field($block['settings']['textColor'] ?? '#333333'),
                             'padding' => self::spacing($block['settings']['padding'] ?? []),
                         ),
                     );
@@ -266,11 +266,11 @@ class Sanitize
                         'type' => 'table',
                         'content' => self::table($block['content'] ?? []),
                         'settings' => array(
-                            'borderColor' => sanitize_hex_color($block['settings']['borderColor'] ?? '#e0e0e0'),
-                            'thbackground' => sanitize_hex_color($block['settings']['thbackground'] ?? '#0073aa'),
-                            'thTextColor' => sanitize_hex_color($block['settings']['thTextColor'] ?? '#ffffff'),
-                            'background' => sanitize_hex_color($block['settings']['background'] ?? '#ffffff'),
-                            'textColor' => sanitize_hex_color($block['settings']['textColor'] ?? '#333333'),
+                            'borderColor' => sanitize_text_field($block['settings']['borderColor'] ?? '#e0e0e0'),
+                            'thbackground' => sanitize_text_field($block['settings']['thbackground'] ?? '#0073aa'),
+                            'thTextColor' => sanitize_text_field($block['settings']['thTextColor'] ?? '#ffffff'),
+                            'background' => sanitize_text_field($block['settings']['background'] ?? '#ffffff'),
+                            'textColor' => sanitize_text_field($block['settings']['textColor'] ?? '#333333'),
                             'padding' => self::spacing($block['settings']['padding'] ?? []),
                             'alignment' => in_array($block['settings']['alignment'] ?? '', ['left', 'center', 'right'])
                                 ? $block['settings']['alignment']
@@ -406,9 +406,10 @@ class Sanitize
                 'alignment' => in_array($footer['settings']['alignment'] ?? '', ['left', 'center', 'right'])
                     ? $footer['settings']['alignment']
                     : 'center',
-                'textColor' => sanitize_hex_color($footer['settings']['textColor'] ?? '#666666'),
+                'linkColor' => sanitize_text_field($footer['linkColor'] ?? '#0073aa'),
+                'textColor' => sanitize_text_field($footer['settings']['textColor'] ?? '#666666'),
                 'fontSize' => sanitize_text_field($footer['settings']['fontSize'] ?? '12px'),
-                'background' => sanitize_hex_color($footer['settings']['background'] ?? 'transparent'),
+                'background' => sanitize_text_field($footer['settings']['background'] ?? 'transparent'),
                 'padding' => self::spacing($footer['settings']['padding'] ?? ['top' => '20px', 'right' => '40px', 'bottom' => '20px', 'left' => '40px']),
             ),
         );

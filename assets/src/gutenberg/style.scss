@@ -148,6 +148,10 @@
         color: inherit;
         text-decoration: underline;
     }
+
+    &.footer a {
+        color: var(--footer--link--color, #0073aa);
+    }
 }
 
 // ─── NOTICE

@@ -201,6 +201,11 @@ export const FooterPanel = ({ footer, setFooterContent }) => {
                                 value: footer?.settings?.background,
                                 onChange: (value) => setBlockSetting('background', value),
                                 label: __('Background'),
+                            },
+                            {
+                                value: footer?.settings?.linkColor,
+                                onChange: (value) => setBlockSetting('linkColor', value),
+                                label: __('Link Color'),
                             }
                         ]}
                     />

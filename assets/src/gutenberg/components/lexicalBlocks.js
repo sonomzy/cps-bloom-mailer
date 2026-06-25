@@ -4,7 +4,7 @@ import { boxValues, defaultSpacing, resolveFontStack } from '../../utils';
 
 export const Header = ({ header, design, setHeaderContent, selectedSection, onClick }) => {
     return (
-        <div className='lexical-block-wrapper'
+        <div className='lexical-block-wrapper header'
             data-type='header'
             style={{
                 borderColor: (selectedSection === 'header' ? '#999' : ''),
@@ -59,7 +59,7 @@ export const Header = ({ header, design, setHeaderContent, selectedSection, onCl
 export const Footer = ({ footer, design, setFooterContent, selectedSection, onClick }) => {
     return (
         <div
-            className='lexical-block-wrapper'
+            className='lexical-block-wrapper footer'
             data-type='footer'
             style={{
                 borderColor: (selectedSection === 'footer' ? '#999' : ''),
@@ -69,6 +69,7 @@ export const Footer = ({ footer, design, setFooterContent, selectedSection, onCl
                 color: footer?.settings?.textColor,
                 backgroundColor: footer?.settings?.background,
                 padding: boxValues(footer?.settings?.padding || defaultSpacing('footer')),
+               ' --footer--link--color':footer?.settings?.linkColor,
             }}
             onClick={onClick}
         >

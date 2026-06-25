@@ -252,8 +252,8 @@ class Templates
         return array(
             'enabled' => true,
             'content' => [
-                'html' => '<p style="margin:0 0 6px;">© {{current_year}} <a href="{{site_url}}" style="color:#0073aa;text-decoration:none;">{{site_name}}</a>. All rights reserved.</p>'
-                    . '<p style="margin:0;">You\'re receiving this because you subscribed at <a href="{{site_url}}" style="color:#0073aa;text-decoration:none;">{{site_name}}</a>. '
+                'html' => '<p style="margin:0 0 6px;">© {{current_year}} <a href="{{site_url}}">{{site_name}}</a>. All rights reserved.</p>'
+                    . '<p style="margin:0;">You\'re receiving this because you subscribed at <a href="{{site_url}}">{{site_name}}</a>. '
                     . '<a href="{{unsubscribe_url}}" style="color:#aaaaaa;text-decoration:none;">Unsubscribe</a> &nbsp;·&nbsp; '
             ],
             'settings' => array(
@@ -261,6 +261,7 @@ class Templates
                 'textColor' => '#666666',
                 'fontSize'  => '12px',
                 'background'   => '',
+                'linkColor' => '0073aa',
                 'padding'   => ['top' => '20px', 'left' => '40px', 'right' => '40px', 'bottom' => '20px'],
             ),
         );

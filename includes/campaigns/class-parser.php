@@ -108,9 +108,25 @@ class Parser
         $s          = $footer['settings'] ?? [];
         $alignment  = $s['alignment'] ?? 'center';
         $font_size  = $s['fontSize']  ?? '12';
-        $content    = $footer['content']['html'] ?? '';
+        $linkColor = self::resolve_preset_color($s['linkColor'] ?? '');
         $style    = self::spacing_style(['spacing' => $s['padding'] ?? self::default_spacing('footer')]);
         $style   .= self::color_style($s);
+        $content = $footer['content']['html'] ?? '';
+        // $content = self::strip_link_colors($footer['content']['html'] ?? '');
+
+        $content = preg_replace_callback(
+            '/<a\b([^>]*)>/i',
+            function (array $matches) use ($linkColor) {
+                $attrs = $matches[1];
+
+                if (str_contains($attrs, '{{unsubscribe_url}}')) {
+                    return $matches[0];
+                }
+
+                return '<a' . $attrs . ' style="color:' . esc_attr($linkColor) . ';text-decoration:underline;">';
+            },
+            $content
+        );
 
         return " <tr>
             <td style=\"text-align:{$alignment};border-top:1px solid #e0e0e0;font-size:{$font_size};{$style}\">
@@ -1709,6 +1725,7 @@ class Parser
         return $matches[1] ?? wp_strip_all_tags($html);
     }
 
+
     /**
      * Returns default spacing for a given section type.
      *
@@ -1763,6 +1780,35 @@ class Parser
     private static function cameloKebab(string $string)
     {
         return strtolower(preg_replace('/([a-z])([A-Z])/', '$1-$2', $string));
+    }
+
+    private static function strip_link_colors(string $content): string
+    {
+        // Remove color from inline style attributes on <a> tags
+        $content = preg_replace_callback(
+            '/<a\b([^>]*)>/i',
+            function (array $matches) {
+                $attrs = $matches[1];
+
+                // Strip color property from any style attribute
+                $attrs = preg_replace_callback(
+                    '/style\s*=\s*(["\'])(.*?)\1/is',
+                    function (array $m) {
+                        $style = preg_replace('/\bcolor\s*:[^;]+;?/i', '', $m[2]);
+                        return 'style=' . $m[1] . trim($style, "; \t") . $m[1];
+                    },
+                    $attrs
+                );
+
+                // Strip standalone color attribute (non-standard but some editors add it)
+                $attrs = preg_replace('/\bcolor\s*=\s*(["\'])[^"\']*\1/i', '', $attrs);
+
+                return '<a' . $attrs . '>';
+            },
+            $content
+        );
+
+        return $content;
     }
 
     /**
