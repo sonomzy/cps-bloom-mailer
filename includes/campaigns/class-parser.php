@@ -666,7 +666,7 @@ class Parser
     {
         $attrs      = $block['attrs'] ?? [];
         $inner_blocks   = $block['innerBlocks'] ?? [];
-
+        
         if (empty($inner_blocks)) {
             return '';
         }
@@ -724,7 +724,11 @@ class Parser
             $icons .= self::social_link($link, $args);
         }
 
-        $ulStyle = $vertical ? 'display:block;' : "display:flex;align-items:center;flex-wrap: wrap;justify-content:{$align}";
+        $ulStyle = $vertical ? 'display:block;' : "display:flex;align-items:center;flex-wrap: wrap;justify-content:{$align};";
+        if (!empty($attrs['background'])) {
+            $ulStyle .= 'background-color:' . (self::resolve_color($attrs['background']) ?: '') . ';';
+        }
+        
         return "<tr>
             <td style=\"{$style}letter-spacing:1px;text-transform:uppercase;line-height:1;\">
                 <ul style=\"margin:0;list-style:none;font-size:{$fontSize}px;{$ulStyle}\">

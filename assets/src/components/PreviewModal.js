@@ -88,7 +88,6 @@ const PreviewModal = ({ subject, header, blocks, footer, design, close }) => {
                         srcDoc={previewHtml}
                         className="preview-iframe"
                         style={{ pointerEvents: 'none' }}
-                        allowScripts={false}
                         title="Email Preview"
                         onLoad={(e) => {
                             // resize iframe to its content height so the wrapper div scrolls

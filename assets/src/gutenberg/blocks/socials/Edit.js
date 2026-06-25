@@ -105,7 +105,8 @@ export function SocialLinksEdit(props) {
         }
     }, [logosOnly, setAttributes]);
 
-    const blockProps = useBlockProps({ style: { fontSize: (size === 'huge' || size === 'large') ? 14 : 11, '--cps--socials-size': `${sizes[size] ?? 16}px` } });
+    const blockProps = useBlockProps({ 
+        style: { fontSize: (size === 'huge' || size === 'large') ? 14 : 11, '--cps--socials-size': `${sizes[size] ?? 16}px`, backgroundColor:background } });
     const innerBlocksProps = useInnerBlocksProps(blockProps, {
         templateLock: false,
         orientation: attributes.layout?.orientation ?? 'horizontal',
