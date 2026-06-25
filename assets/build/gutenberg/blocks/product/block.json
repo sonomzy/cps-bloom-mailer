@@ -11,6 +11,12 @@
     "inserter": true
   },
   "attributes": {
+    "background": {
+      "type": "string"
+    },
+    "textColor": {
+      "type": "string"
+    },
     "ids": {
       "type": "array",
       "default": []

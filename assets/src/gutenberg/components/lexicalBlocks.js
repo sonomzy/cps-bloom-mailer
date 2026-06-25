@@ -12,7 +12,7 @@ export const Header = ({ header, design, setHeaderContent, selectedSection, onCl
                 textAlign: header?.settings?.alignment || 'center',
                 fontSize: header?.settings?.fontSize,
                 color: header?.settings?.textColor,
-                backgroundColor: header?.settings?.bgColor,
+                backgroundColor: header?.settings?.background,
                 padding: boxValues(header?.settings?.padding || defaultSpacing('header')),
             }}
             onClick={onClick}
@@ -67,7 +67,7 @@ export const Footer = ({ footer, design, setFooterContent, selectedSection, onCl
                 textAlign: footer?.settings?.alignment || 'center',
                 fontSize: footer?.settings?.fontSize,
                 color: footer?.settings?.textColor,
-                backgroundColor: footer?.settings?.bgColor,
+                backgroundColor: footer?.settings?.background,
                 padding: boxValues(footer?.settings?.padding || defaultSpacing('footer')),
             }}
             onClick={onClick}

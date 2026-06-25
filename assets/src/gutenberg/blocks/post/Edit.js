@@ -1,5 +1,5 @@
 import { __ } from '@wordpress/i18n';
-import { InspectorControls, useBlockProps } from '@wordpress/block-editor';
+import { InspectorControls, PanelColorSettings, useBlockProps } from '@wordpress/block-editor';
 import {
     PanelBody,
     SelectControl,
@@ -17,9 +17,9 @@ import { wpPosts } from '../../../utils';
 
 export default function Edit({ attributes, setAttributes, className }) {
     const {
-        ids, orderBy, categories, count, columns,
-        showExcerpt, showImage, showButton,
-        buttonText, buttonColor, buttonTextColor,
+        ids, orderBy, categories, count, columns, showExcerpt,
+        showImage, showButton, buttonText, buttonColor,
+        buttonTextColor, background, textColor
     } = attributes;
     const { postsData, loadingPosts } = wpPosts();
     const blockProps = useBlockProps({
@@ -84,6 +84,40 @@ export default function Edit({ attributes, setAttributes, className }) {
     // ── Featured image helper — from _embedded, not post.featured_image ───────
     function getFeaturedImage(post) {
         return post._embedded?.['wp:featuredmedia']?.[0]?.source_url ?? null;
+    }
+
+    const colorSettings = [
+        {
+            value: background,
+            onChange: (colorValue) =>
+                setAttributes({ background: colorValue }),
+            label: __('Background'),
+        },
+        {
+            value: textColor,
+            onChange: (colorValue) =>
+                setAttributes({ textColor: colorValue }),
+            label: __('Text Color'),
+        },
+    ];
+
+    if (showButton) {
+        colorSettings.unshift(
+            {
+                value: buttonColor,
+                onChange: (colorValue) => {
+                    setAttributes({ buttonColor: colorValue });
+                },
+                label: __('Button Color'),
+            },
+            {
+                value: buttonTextColor,
+                onChange: (colorValue) => {
+                    setAttributes({ buttonTextColor: colorValue });
+                },
+                label: __('Btn Text Coor'),
+            },
+        );
     }
 
     // ── Render ────────────────────────────────────────────────────────────────
@@ -176,6 +210,12 @@ export default function Edit({ attributes, setAttributes, className }) {
                         />
                     )}
 
+                    <PanelColorSettings
+                        __experimentalIsRenderedInSidebar
+                        title={__('Color')}
+                        colorSettings={colorSettings}
+                    />
+
                 </PanelBody>
             </InspectorControls>
 
@@ -204,7 +244,7 @@ export default function Edit({ attributes, setAttributes, className }) {
                                 <div
                                     key={post.id}
                                     className="post-item"
-                                    style={{ padding: 8, textAlign: 'center' }}
+                                    style={{ background: background, color: textColor, padding: 8, textAlign: 'center' }}
                                 >
                                     {showImage && image && (
                                         <img

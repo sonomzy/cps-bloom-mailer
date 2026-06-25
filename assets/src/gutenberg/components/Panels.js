@@ -131,8 +131,8 @@ export const HeaderPanel = ({ header, setHeaderContent }) => {
                                 label: __('Text'),
                             },
                             {
-                                value: header?.settings?.bgColor,
-                                onChange: (value) => setBlockSetting('bgColor', value),
+                                value: header?.settings?.background,
+                                onChange: (value) => setBlockSetting('background', value),
                                 label: __('Background'),
                             }
                         ]}
@@ -140,7 +140,7 @@ export const HeaderPanel = ({ header, setHeaderContent }) => {
                     <ContrastChecker
                         {...{
                             textColor: header?.settings?.textColor,
-                            backgroundColor: header?.settings?.bgColor
+                            backgroundColor: header?.settings?.background
                         }}
                         isLargeText={false}
                     />
@@ -198,8 +198,8 @@ export const FooterPanel = ({ footer, setFooterContent }) => {
                                 label: __('Text'),
                             },
                             {
-                                value: footer?.settings?.bgColor,
-                                onChange: (value) => setBlockSetting('bgColor', value),
+                                value: footer?.settings?.background,
+                                onChange: (value) => setBlockSetting('background', value),
                                 label: __('Background'),
                             }
                         ]}
@@ -207,7 +207,7 @@ export const FooterPanel = ({ footer, setFooterContent }) => {
                     <ContrastChecker
                         {...{
                             textColor: footer?.settings?.textColor,
-                            backgroundColor: footer?.settings?.bgColor
+                            backgroundColor: footer?.settings?.background
                         }}
                         isLargeText={false}
                     />

@@ -67,11 +67,10 @@ class Parser
         }
 
         $s          = $header['settings'] ?? [];
-        $bg_color   = self::resolve_color($s['bgColor'] ?? '#ffffff');
-        $padding    = self::spacing_style(['spacing' => $s['padding'] ?? self::default_spacing('header')]);
         $alignment  = $s['alignment'] ?? 'center';
         $font       = $s['fontFamily'] ?? 'sans-serif';
-        $text_color = self::resolve_color($s['textColor'] ?? '#333333');
+        $style    = self::spacing_style(['spacing' => $s['padding'] ?? self::default_spacing('header')]);
+        $style   .= self::color_style($s);
         $logo_url   = $header['logoUrl']   ?? '';
         $logo_width = $header['logoWidth'] ?? 60;
 
@@ -82,18 +81,18 @@ class Parser
         } else {
             $title      = $header['title']['html'] ?? '{{site_name}}';
             $title_size = $s['titleSize'] ?? '28px';
-            $inner      = "<h1 style=\"margin:0;color:{$text_color};font-size:{$title_size};font-family:{$font};\">{$title}</h1>";
+            $inner      = "<h1 style=\"margin:0;font-size:{$title_size};font-family:{$font};\">{$title}</h1>";
         }
 
         $desc_html = '';
         if (! empty($s['showDescription'])) {
             $font_size   = $s['fontSize']   ?? '14px';
             $description = $header['description']['html'] ?? '';
-            $desc_html   = "<p style=\"margin:10px 0 0;font-size:{$font_size};color:{$text_color};font-family:{$font};\">{$description}</p>";
+            $desc_html   = "<p style=\"margin:10px 0 0;font-size:{$font_size};font-family:{$font};\">{$description}</p>";
         }
 
         return "<tr>
-            <td style=\"background:{$bg_color};padding:{$padding};text-align:{$alignment};\">
+            <td style=\"{$style}text-align:{$alignment};\">
 				{$inner}
 				{$desc_html}
 			</td>
@@ -107,15 +106,14 @@ class Parser
         }
 
         $s          = $footer['settings'] ?? [];
-        $bg_color   = self::resolve_color($s['bgColor'] ?? '#ffffff');
         $alignment  = $s['alignment'] ?? 'center';
-        $padding    = self::spacing_style(['spacing' => $s['padding'] ?? self::default_spacing('footer')]);
         $font_size  = $s['fontSize']  ?? '12';
-        $text_color = self::resolve_color($s['textcolor'] ?? '#666666');
         $content    = $footer['content']['html'] ?? '';
+        $style    = self::spacing_style(['spacing' => $s['padding'] ?? self::default_spacing('footer')]);
+        $style   .= self::color_style($s);
 
         return " <tr>
-            <td style=\"background:{$bg_color};text-align:{$alignment};padding:{$padding};border-top:1px solid #e0e0e0;font-size:{$font_size};color:{$text_color};\">
+            <td style=\"text-align:{$alignment};border-top:1px solid #e0e0e0;font-size:{$font_size};{$style}\">
                 {$content}
             </td>
         </tr>";
@@ -540,11 +538,11 @@ class Parser
 
             if ($isWide) {
                 $separator = "<table border=\"0\" cellpadding=\"0\" cellspacing=\"0\" width=\"100%\" style=\"width:100%;\">\n" .
-                    "  <tr><td height=\"2\" bgcolor=\"{$color}\" style=\"font-size:2px; line-height:2px; height:2px; background-color:{$color};\">&nbsp;</td></tr>\n" .
+                    "  <tr><td height=\"2\" background=\"{$color}\" style=\"font-size:2px; line-height:2px; height:2px; background-color:{$color};\">&nbsp;</td></tr>\n" .
                     "</table>";
             } else {
                 $separator = "<table align=\"center\" border=\"0\" cellpadding=\"0\" cellspacing=\"0\" width=\"100\" style=\"width:100px; margin:0 auto;\">\n" .
-                    "  <tr><td height=\"2\" bgcolor=\"{$color}\" style=\"font-size:2px; line-height:2px; height:2px; background-color:{$color};\">&nbsp;</td></tr>\n" .
+                    "  <tr><td height=\"2\" background=\"{$color}\" style=\"font-size:2px; line-height:2px; height:2px; background-color:{$color};\">&nbsp;</td></tr>\n" .
                     "</table>";
             }
         }
@@ -666,7 +664,7 @@ class Parser
     {
         $attrs      = $block['attrs'] ?? [];
         $inner_blocks   = $block['innerBlocks'] ?? [];
-        
+
         if (empty($inner_blocks)) {
             return '';
         }
@@ -728,7 +726,7 @@ class Parser
         if (!empty($attrs['background'])) {
             $ulStyle .= 'background-color:' . (self::resolve_color($attrs['background']) ?: '') . ';';
         }
-        
+
         return "<tr>
             <td style=\"{$style}letter-spacing:1px;text-transform:uppercase;line-height:1;\">
                 <ul style=\"margin:0;list-style:none;font-size:{$fontSize}px;{$ulStyle}\">
@@ -911,9 +909,11 @@ class Parser
         $show_excerpt = $attrs['showExcerpt'] ?? false;
         $show_button  = $attrs['showButton'] ?? true;
         $button_text  = $attrs['buttonText'] ?? 'Read More';
-        $bg_color     = $attrs['bgColor'] ?? '#ffffff';
-        $text_color   = $attrs['textColor'] ?? '#333333';
-        $padding      = self::spacing_style(['spacing' => $attrs['padding']], ['type' => 'block']);
+        $btnColor     = $attrs['buttonColor'] ?? '#ffffff';
+        $btnTextColor   = $attrs['buttonTextColor'] ?? '#333333';
+
+        $style    = self::spacing_style(['spacing' => $attrs['padding'] ?? self::default_spacing('block')]);
+        $style   .= self::color_style($attrs);
 
         $args = [
             'post_type'      => 'post',
@@ -958,8 +958,8 @@ class Parser
                 $inner .= '</a>';
             }
 
-            $inner .= '<h3 style="margin:0 0 8px;font-size:15px;line-height:1.4;color:' . esc_attr($text_color) . ';">';
-            $inner .= '<a href="' . esc_url($permalink) . '" style="color:' . esc_attr($text_color) . ';text-decoration:none;">' . esc_html($title) . '</a>';
+            $inner .= '<h3 style="margin:0 0 8px;font-size:15px;line-height:1.4;">';
+            $inner .= '<a href="' . esc_url($permalink) . '" style="color:inherit;text-decoration:none;">' . esc_html($title) . '</a>';
             $inner .= '</h3>';
 
             if ($show_excerpt && $excerpt) {
@@ -967,7 +967,7 @@ class Parser
             }
 
             if ($show_button) {
-                $inner .= '<a href="' . esc_url($permalink) . '" style="display:inline-block;padding:6px 14px;background-color:' . esc_attr($text_color) . ';color:' . esc_attr($bg_color) . ';text-decoration:none;font-size:13px;">' . esc_html($button_text) . '</a>';
+                $inner .= '<a href="' . esc_url($permalink) . '" style="display:inline-block;padding:6px 14px;color:' . (esc_attr($btnTextColor)) . ';background-color:' . esc_attr($btnColor) . ';text-decoration:none;font-size:13px;">' . esc_html($button_text) . '</a>';
             }
 
             // One <td> per post — render_card_rows handles the chunking into rows
@@ -976,7 +976,7 @@ class Parser
 
         wp_reset_postdata();
 
-        return self::render_card_rows($cards, $cols, $col_width, $padding, $bg_color);
+        return self::render_card_rows($cards, $cols, $col_width, $style);
     }
 
     private static function product(array $block): string
@@ -991,9 +991,10 @@ class Parser
         $show_image   = $attrs['showImage'] ?? true;
         $show_button  = $attrs['showButton'] ?? true;
         $button_text  = $attrs['buttonText'] ?? 'Shop Now';
-        $bg_color     = $attrs['bgColor'] ?? '#ffffff';
-        $text_color   = $attrs['textColor'] ?? '#333333';
-        $padding      = self::spacing_style(['spacing' => $attrs['padding']], ['type' => 'block']);
+        $btnColor     = $attrs['buttonColor'] ?? '#ffffff';
+        $btnTextColor   = $attrs['buttonTextColor'] ?? '#333333';
+        $style    = self::spacing_style(['spacing' => $attrs['padding'] ?? self::default_spacing('block')]);
+        $style   .= self::color_style($attrs);
 
         $args = [
             'post_type'      => 'product',
@@ -1058,8 +1059,8 @@ class Parser
                 $inner .= '</a>';
             }
 
-            $inner .= '<h3 style="margin:0 0 4px;font-weight:600;font-size:15px;color:' . esc_attr($text_color) . ';">';
-            $inner .= '<a href="' . esc_url($permalink) . '" style="color:' . esc_attr($text_color) . ';text-decoration:none;">' . esc_html($title) . '</a>';
+            $inner .= '<h3 style="margin:0 0 4px;font-weight:600;font-size:15px;">';
+            $inner .= '<a href="' . esc_url($permalink) . '" style="color:inherit;text-decoration:none;">' . esc_html($title) . '</a>';
             $inner .= '</h3>';
 
             if ($product->is_on_sale()) {
@@ -1072,7 +1073,7 @@ class Parser
             }
 
             if ($price_html) {
-                $inner .= '<p style="margin:0 0 10px;font-size:14px;color:' . esc_attr($text_color) . ';">' . $price_html . '</p>';
+                $inner .= '<p style="margin:0 0 10px;font-size:14px;">' . $price_html . '</p>';
             }
 
             $rating       = (float) $product->get_average_rating();
@@ -1081,13 +1082,13 @@ class Parser
                 $inner .= '<p style="margin:0 0 6px;font-size:13px;color:#f5a623;letter-spacing:2px;">';
                 $inner .= '<span>' . esc_html(self::render_stars($rating)) . '</span>';
                 if ($review_count > 0) {
-                    $inner .= '<span style="color:' . esc_attr($text_color) . ';font-size:12px;letter-spacing:0;margin-left:4px;opacity:0.7;">(' . $review_count . ')</span>';
+                    $inner .= '<span style="font-size:12px;letter-spacing:0;margin-left:4px;opacity:0.7;">(' . $review_count . ')</span>';
                 }
                 $inner .= '</p>';
             }
 
             if ($show_button) {
-                $inner .= '<a href="' . esc_url($permalink) . '" style="display:inline-block;padding:6px 14px;background-color:' . esc_attr($text_color) . ';color:' . esc_attr($bg_color) . ';text-decoration:none;font-size:13px;">' . esc_html($button_text) . '</a>';
+                $inner .= '<a href="' . esc_url($permalink) . '" style="display:inline-block;padding:6px 14px;background-color:' . esc_attr($btnColor) . ';color:' . esc_attr($btnTextColor) . ';text-decoration:none;font-size:13px;">' . esc_html($button_text) . '</a>';
             }
 
             $cards[] = "<td class=\"email-column\" style=\"padding:8px;text-align:center;width:{$col_width};vertical-align:top;\">{$inner}</td>";
@@ -1095,7 +1096,7 @@ class Parser
 
         wp_reset_postdata();
 
-        return self::render_card_rows($cards, $cols, $col_width, $padding, $bg_color);
+        return self::render_card_rows($cards, $cols, $col_width, $style);
     }
 
     private static function table(array $block): string
@@ -1194,10 +1195,10 @@ class Parser
      * @param string[] $cards
      * @param int      $cols
      * @param int      $col_width
-     * @param string   $padding
+     * @param string   $style
      * @return string
      */
-    private static function render_card_rows(array $cards, int $cols, string $col_width, string $padding, string $bg_color): string
+    private static function render_card_rows(array $cards, int $cols, string $col_width, string $style): string
     {
         $rows = [];
         for ($i = 0; $i < count($cards); $i += $cols) {
@@ -1210,8 +1211,9 @@ class Parser
 
         $rows_html = implode('', $rows);
 
+        $inline = !empty($style) ? " style=\"{$style}\"" : '';
         return "<tr>
-			<td style=\"padding:{$padding};background:{$bg_color};\">
+			<td{$inline}>
 				<table role=\"presentation\" style=\"width:100%;border:0;border-collapse:collapse;\">
 					{$rows_html}
 				</table>
@@ -1423,6 +1425,9 @@ class Parser
         }
         if (! empty($attrs['backgroundColor'])) {
             $css .= 'background-color:' . self::resolve_preset_color($attrs['backgroundColor']) . ';';
+        }
+        if (! empty($attrs['background'])) {
+            $css .= 'background-color:' . self::resolve_preset_color($attrs['background']) . ';';
         }
         return $css;
     }
@@ -1818,15 +1823,22 @@ class Parser
         $header_html    = self::header($header, $design);
         $footer_html    = self::footer($footer, $design);
         $blocks_html    = self::blocks($blocks);
-        $body_bg        = $design['bodyBg']     ?? '#f4f4f4';
-        $container_bg   = $design['containerBg'] ?? '#ffffff';
         $container_w    = (int) ($design['containerWidth'] ?? 600);
         $border_radius  = (int) ($design['borderRadius']  ?? 8);
-        $padding        = self::spacing_style(['spacing' => $design['padding'] ?? self::default_spacing('content')]);
-        $text_color     = $design['textColor']  ?? '#333333';
-        $font_size      = (int) ($design['fontSize'] ?? 14);
-        $font_family    = self::resolve_font_family($design['fontFamily'] ?? 'system');
-        $line_height    = $design['lineHeight'] ?? 1.6;
+        $body_bg        = self::resolve_color($design['bodyBg']     ?? '#f4f4f4');
+        $container_bg   = self::resolve_color($design['containerBg'] ?? '#ffffff');
+        $styles = [
+            'style' => [
+                'typography' => [
+                    'lineHeight' => $design['lineHeight'] ?? 1.6,
+                    'fontFamily' => 'system',
+                    'fontSize' => $design['fontSize'] ?? 14
+                ]
+            ],
+            'textColor' => $design['textColor']  ?? '#333333',
+            'spacing' => $design['padding'] ?? self::default_spacing('content')
+        ];
+        $style = self::resolveStyles($styles);
 
         return <<<HTML
 <!DOCTYPE html>
@@ -1842,6 +1854,7 @@ class Parser
     </o:OfficeDocumentSettings></xml></noscript>
     <![endif]-->
 	<style id="cps-styles-inline-css">
+        .econtainer a{color:inherit;text-decoration: underline;}
         ul,ol{margin: 0 0 0.5em 1.5em;padding: 0;list-style-type: disc;}
         img.wp-smiley, img.emoji { display: inline !important;border: none !important;box-shadow: none !important; height: 1em !important;width: 1em !important;margin: 0 0.07em !important;vertical-align: -0.1em !important;background: none !important;padding: 0 !important;}
         /* Mobile stacking for columns */
@@ -1854,7 +1867,7 @@ class Parser
     <table class="econtainer" style="width: 100%; border: 0; border-collapse: separate; background: {$container_bg}; max-width: {$container_w}px; border-radius: {$border_radius}px; margin:auto;overflow:hidden;">
        {$header_html}
         <tr>
-            <td class="einner" style="padding: {$padding}; color: {$text_color}; font-size: {$font_size}px; font-family: {$font_family}; line-height: {$line_height};">
+            <td class="einner" style="{$style};">
                 <table style="width: 100%; border: 0; border-collapse: collapse;">
                     {$blocks_html}
                 </table>

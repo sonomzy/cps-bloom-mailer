@@ -238,7 +238,7 @@ class Templates
             'settings'    => array(
                 'alignment'       => 'center',
                 'textColor'       => '#333333',
-                'bgColor'         => 'transparent',
+                'background'         => '',
                 'titleSize'       => '28px',
                 'fontSize'        => '14px',
                 'showDescription' => false,
@@ -260,7 +260,7 @@ class Templates
                 'alignment' => 'center',
                 'textColor' => '#666666',
                 'fontSize'  => '12px',
-                'bgColor'   => 'transparent',
+                'background'   => '',
                 'padding'   => ['top' => '20px', 'left' => '40px', 'right' => '40px', 'bottom' => '20px'],
             ),
         );

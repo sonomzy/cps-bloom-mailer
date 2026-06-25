@@ -150,7 +150,7 @@ class Builder
         $show_excerpt = $s['showExcerpt'] ?? false;
         $show_button  = $s['showButton'] ?? true;
         $button_text  = $s['buttonText'] ?? 'Read More';
-        $bg_color     = $s['bgColor'] ?? '#ffffff';
+        $bg_color     = $s['background'] ?? '#ffffff';
         $text_color   = $s['textColor'] ?? '#333333';
         $padding      = Sanitize::box_values($s['padding'] ?? self::default_spacing('block'));
 
@@ -236,7 +236,7 @@ class Builder
         $show_image   = $s['showImage'] ?? true;
         $show_button  = $s['showButton'] ?? true;
         $button_text  = $s['buttonText'] ?? 'Shop Now';
-        $bg_color     = $s['bgColor'] ?? '#ffffff';
+        $bg_color     = $s['background'] ?? '#ffffff';
         $text_color   = $s['textColor'] ?? '#333333';
         $padding      = Sanitize::box_values($s['padding'] ?? self::default_spacing('block'));
 
@@ -364,7 +364,7 @@ class Builder
         $show_image   = $s['showImage']   ?? true;
         $show_excerpt = $s['showExcerpt'] ?? false;
         $show_button  = $s['showButton']  ?? true;
-        $bg_color     = $s['bgColor']     ?? '#ffffff';
+        $bg_color     = $s['background']     ?? '#ffffff';
         $text_color   = $s['textColor']   ?? '#333333';
         $btn_text     = $s['buttonText']  ?? 'Read More';
         $count        = (int) ($s['count'] ?? 2);
@@ -419,7 +419,7 @@ class Builder
 
         $show_image  = $s['showImage']  ?? true;
         $show_button = $s['showButton'] ?? true;
-        $bg_color    = $s['bgColor']    ?? '#ffffff';
+        $bg_color    = $s['background']    ?? '#ffffff';
         $text_color  = $s['textColor']  ?? '#333333';
         $btn_text    = $s['buttonText'] ?? 'Shop Now';
         $count       = (int) ($s['count'] ?? 2);
@@ -511,10 +511,10 @@ class Builder
 
         $s            = $block['settings'] ?? [];
         $padding      = Sanitize::box_values($s['padding'] ?? self::default_spacing('block'));
-        $th_bg        = $s['thBgColor']   ?? '#0073aa';
+        $th_bg        = $s['thbackground']   ?? '#0073aa';
         $border_color = $s['borderColor'] ?? '#e0e0e0';
         $th_color     = $s['thTextColor'] ?? '#ffffff';
-        $bg_color     = $s['bgColor']     ?? '#ffffff';
+        $bg_color     = $s['background']     ?? '#ffffff';
         $text_color   = $s['textColor']   ?? ($design['textColor'] ?? '#333333');
         $font         = $design['fontFamily'] ?? 'sans-serif';
 
@@ -568,7 +568,7 @@ class Builder
 
             case 'text':
                 $text_color = $s['textColor']  ?? ($design['textColor'] ?? '#333333');
-                $bg_color   = $s['bgColor']    ?? 'transparent';
+                $bg_color   = $s['background']    ?? 'transparent';
                 $alignment  = $s['alignment']  ?? 'left';
                 return "<tr>
 					<td style=\"padding:{$padding};color:{$text_color};font-family:{$font};background-color:{$bg_color};text-align:{$alignment};\">
@@ -579,7 +579,7 @@ class Builder
             case 'heading':
                 $htag       = (int) ($s['level'] ?? 2);
                 $text_color = $s['textColor'] ?? ($design['textColor'] ?? '#333333');
-                $bg_color   = $s['bgColor']   ?? 'transparent';
+                $bg_color   = $s['background']   ?? 'transparent';
                 $alignment  = $s['alignment'] ?? 'left';
                 return "<tr>
 					<td style=\"padding:{$padding};color:{$text_color};font-family:{$font};background-color:{$bg_color};text-align:{$alignment};\">
@@ -591,7 +591,7 @@ class Builder
                 $alignment     = $s['alignment']    ?? 'center';
                 $spacing       = Sanitize::box_values($s['spacing'] ?? self::default_spacing('space'));
                 $href          = $s['href']          ?? '#';
-                $bg_color      = $s['bgColor']       ?? '#0073aa';
+                $bg_color      = $s['background']       ?? '#0073aa';
                 $text_color    = $s['textColor']     ?? '#ffffff';
                 $border_radius = (int) ($s['borderRadius'] ?? 5);
                 $margin        = $alignment === 'left' ? '0 auto 0 0' : ($alignment === 'right' ? '0 0 0 auto' : '0 auto');
@@ -703,7 +703,7 @@ class Builder
     private static function header_html(array $header, array $design): string
     {
         $s          = $header['settings'] ?? [];
-        $bg_color   = $s['bgColor']   ?? 'unset';
+        $bg_color   = $s['background']   ?? 'unset';
         $padding    = Sanitize::box_values($s['padding'] ?? self::default_spacing('header'));
         $alignment  = $s['alignment'] ?? 'center';
         $font       = $design['fontFamily'] ?? 'sans-serif';
@@ -746,7 +746,7 @@ class Builder
     private static function footer_html(array $footer, array $design): string
     {
         $s          = $footer['settings'] ?? [];
-        $bg_color   = $s['bgColor']   ?? 'unset';
+        $bg_color   = $s['background']   ?? 'unset';
         $alignment  = $s['alignment'] ?? 'center';
         $padding    = Sanitize::box_values($s['padding'] ?? self::default_spacing('footer'));
         $font_size  = $s['fontSize']  ?? '12';

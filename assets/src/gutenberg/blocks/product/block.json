@@ -11,6 +11,8 @@
         "inserter": true
     },
     "attributes": {
+        "background":     { "type": "string"},
+        "textColor":      { "type": "string"},
         "ids":            { "type": "array",   "default": [] },
         "count":          { "type": "number",  "default": 2 },
         "columns":        { "type": "number",  "default": 2 },
