@@ -141,7 +141,7 @@ export default function Edit({ attributes, setAttributes, className }) {
     ];
 
     if (showButton) {
-        colorSettings.unshift(
+        colorSettings.push(
             {
                 value: buttonColor,
                 onChange: (colorValue) => {
@@ -333,7 +333,7 @@ export default function Edit({ attributes, setAttributes, className }) {
                                     <div style={{
                                         display: 'inline-block',
                                         margin: '6px auto 0',
-                                        padding: '6px 14px',
+                                        padding: '10px 13px',
                                         background: buttonColor,
                                         color: buttonTextColor,
                                         fontSize: 13,

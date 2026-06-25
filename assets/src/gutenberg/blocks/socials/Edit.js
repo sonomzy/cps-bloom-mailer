@@ -131,7 +131,7 @@ export function SocialLinksEdit(props) {
     ];
 
     if (!logosOnly) {
-        colorSettings.unshift({
+        colorSettings.push({
             value: iconBackgroundColorValue,
             onChange: (colorValue) => {
                 setIconBackgroundColor(colorValue);
@@ -139,7 +139,7 @@ export function SocialLinksEdit(props) {
                     iconBackgroundColorValue: colorValue,
                 });
             },
-            label: __('Text'),
+            label: __('Icon Background'),
         });
     }
 

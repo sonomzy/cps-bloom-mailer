@@ -983,7 +983,7 @@ class Parser
             }
 
             if ($show_button) {
-                $inner .= '<a href="' . esc_url($permalink) . '" style="display:inline-block;padding:6px 14px;color:' . (esc_attr($btnTextColor)) . ';background-color:' . esc_attr($btnColor) . ';text-decoration:none;font-size:13px;">' . esc_html($button_text) . '</a>';
+                $inner .= '<a href="' . esc_url($permalink) . '" style="display:inline-block;padding:10px 13px;color:' . (esc_attr($btnTextColor)) . ';background-color:' . esc_attr($btnColor) . ';text-decoration:none;font-size:13px;">' . esc_html($button_text) . '</a>';
             }
 
             // One <td> per post — render_card_rows handles the chunking into rows
@@ -1104,7 +1104,7 @@ class Parser
             }
 
             if ($show_button) {
-                $inner .= '<a href="' . esc_url($permalink) . '" style="display:inline-block;padding:6px 14px;background-color:' . esc_attr($btnColor) . ';color:' . esc_attr($btnTextColor) . ';text-decoration:none;font-size:13px;">' . esc_html($button_text) . '</a>';
+                $inner .= '<a href="' . esc_url($permalink) . '" style="display:inline-block;padding:10px 13px;background-color:' . esc_attr($btnColor) . ';color:' . esc_attr($btnTextColor) . ';text-decoration:none;font-size:13px;">' . esc_html($button_text) . '</a>';
             }
 
             $cards[] = "<td class=\"email-column\" style=\"padding:8px;text-align:center;width:{$col_width};vertical-align:top;\">{$inner}</td>";
