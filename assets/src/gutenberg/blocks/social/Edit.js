@@ -8,7 +8,6 @@ import {
     URLInput,
     useBlockEditingMode,
     useBlockProps,
-    PanelColorSettings,
     store as blockEditorStore,
 } from '@wordpress/block-editor';
 import { useState, useRef, createInterpolateElement } from '@wordpress/element';

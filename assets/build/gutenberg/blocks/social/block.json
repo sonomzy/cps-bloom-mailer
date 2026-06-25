@@ -36,7 +36,7 @@
     "anchor": true,
     "reusable": false,
     "html": false,
-    "inserter": false,
+    "inserter": true,
     "interactivity": {
       "clientNavigation": true
     }

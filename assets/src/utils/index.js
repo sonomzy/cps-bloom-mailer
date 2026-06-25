@@ -94,9 +94,9 @@ export const resetData = async (type) => {
     return response;
 };
 
-export const loadTemplates = async (preview=false) => {
+export const loadTemplates = async (preview = false) => {
     const response = await apiFetch({
-        path: `/cps/v1/mailer/templates&preview=${preview}`,
+        path: `/cps/v1/mailer/templates?preview=${preview}`,
         method: 'GET',
     });
 
@@ -112,8 +112,6 @@ export const formatCampaign = ({
     campaign = {},
     isTemplate = false,
 } = {}) => {
-
-    console.log(campaign.header)
     const defaults = window.cbmData.default;
     const data = {
         id: campaign.id ?? '',
@@ -139,8 +137,6 @@ export const formatCampaign = ({
         data.template_key = campaign.template_key ?? '';
         data.is_default = campaign.is_default ?? 0;
     }
-
-    console.log(data.header)
     return data;
 };
 
@@ -206,9 +202,9 @@ export const exportJSON = ({ data, filename = 'export' }) => {
 // Media library function
 export const openMediaLibrary = (onSelect) => {
     const mediaFrame = wp.media({
-        title: __('Select or Upload Media', 'chicpixies-subscriptions'),
+        title: __('Select or Upload Media', 'cps-bloom-mailer'),
         button: {
-            text: __('Use this media', 'chicpixies-subscriptions')
+            text: __('Use this media', 'cps-bloom-mailer')
         },
         multiple: false,
         library: {
@@ -229,13 +225,19 @@ const format = (value) => {
         return 0;
     }
 
-    // numeric values
+    if (
+        typeof value === 'string' &&
+        value.startsWith('var:preset|spacing|')
+    ) {
+        const slug = value.replace('var:preset|spacing|', '');
+        return `var(--wp--preset--spacing--${slug})`;
+    }
+
     if (typeof value === 'number') {
         return `${value}px`;
     }
 
-    // numeric strings
-    if (!isNaN(value) && value !== '') {
+    if (typeof value === 'string' && !isNaN(value)) {
         return `${value}px`;
     }
 

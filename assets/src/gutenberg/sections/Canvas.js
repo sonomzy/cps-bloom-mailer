@@ -34,12 +34,17 @@ function Canvas({ isMobile, header, footer, design, selectedSection, setHeaderCo
     useBlockCommands();
     return (
         <>
+            {(isMobile && !selectedSection) && <BlockToolbar hideDragHandle={true} />}
             {/* Canvas */}
-            <div className="cps-bloom-mailer-wrapper" style={{ background: design?.bodyBg, padding: 20,fontSize: design?.fontSize, lineHeight: design?.lineHeight }}>
-                <div style={{ borderRadius: design?.borderRadius, maxWidth: design?.containerWidth, background: design?.containerBg, margin: 'auto' }} className="editor-canvas" onClick={() => setSelectedSection(null)}>
-                    {(isMobile && !selectedSection) && <BlockToolbar hideDragHandle={true} />}
+            <div
+                style={{ padding: 20, fontSize: design?.fontSize, lineHeight: design?.lineHeight, width: '100%', minHeight: '100vh' }}
+                onClick={() => setSelectedSection(null)}
+            >
+                <div
+                    style={{ borderRadius: design?.borderRadius, maxWidth: design?.containerWidth, background: design?.containerBg, margin: 'auto', overflow: 'hidden' }}
+                    className="editor-canvas"
+                >
                     <BlockEditorKeyboardShortcuts.Register />
-
                     {header?.enabled &&
                         <EditingProvider >
                             <Header
@@ -92,6 +97,7 @@ function Canvas({ isMobile, header, footer, design, selectedSection, setHeaderCo
                         </EditingProvider>
                     }
                 </div >
+
                 <EditorStyles
                     styles={[]}
                     scope=":where(.editor-styles-wrapper)"

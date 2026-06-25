@@ -4,7 +4,7 @@
 	"name": "cps-bloom-mailer/social",
 	"title": "Social Link",
     "icon": "groups",
-	"category": "widgets",
+    "category": "widgets",
 	"parent": [ "cps-bloom-mailer/socials" ],
 	"description": "Display an icon linking to a social profile or site.",
 	"attributes": {
@@ -34,7 +34,7 @@
 		"anchor": true,
 		"reusable": false,
 		"html": false,
-        "inserter": false,
+        "inserter": true,
 		"interactivity": {
 			"clientNavigation": true
 		}

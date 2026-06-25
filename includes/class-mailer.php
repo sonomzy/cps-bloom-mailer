@@ -176,6 +176,7 @@ class Mailer
 			}
 		}
 	}
+	
 	public static function add_cron_interval($schedules)
 	{
 		$schedules['every_five_minutes'] = array(

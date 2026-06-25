@@ -68,7 +68,7 @@ class Parser
 
         $s          = $header['settings'] ?? [];
         $bg_color   = self::resolve_color($s['bgColor'] ?? '#ffffff');
-        $padding    = self::spaces($s['padding'] ?? self::default_spacing('header'));
+        $padding    = self::spacing_style(['spacing' => $s['padding'] ?? self::default_spacing('header')]);
         $alignment  = $s['alignment'] ?? 'center';
         $font       = $s['fontFamily'] ?? 'sans-serif';
         $text_color = self::resolve_color($s['textColor'] ?? '#333333');
@@ -109,7 +109,7 @@ class Parser
         $s          = $footer['settings'] ?? [];
         $bg_color   = self::resolve_color($s['bgColor'] ?? '#ffffff');
         $alignment  = $s['alignment'] ?? 'center';
-        $padding    = self::spaces($s['padding'] ?? self::default_spacing('footer'));
+        $padding    = self::spacing_style(['spacing' => $s['padding'] ?? self::default_spacing('footer')]);
         $font_size  = $s['fontSize']  ?? '12';
         $text_color = self::resolve_color($s['textcolor'] ?? '#666666');
         $content    = $footer['content']['html'] ?? '';
@@ -125,7 +125,7 @@ class Parser
     {
         $attrs   = $block['attrs'] ?? [];
         $content = $block['innerHTML'];
-        $style   = self::resolveStyles($attrs);
+        $style   = self::resolveStyles($attrs, ['type' => 'block']);
         $inlinStyle = !empty($style) ? " style=\"$style\"" : '';
         $content = self::inner_html($content, 'p');
         $margin = self::spacing_style($attrs, ['prop' => 'margin', 'type' => 'blockMargin']);
@@ -139,7 +139,7 @@ class Parser
         $tag     = "h{$level}";
 
         $innerContent = self::inner_html($block['innerHTML'], $tag);
-        $style  = self::resolveStyles($attrs);
+        $style  = self::resolveStyles($attrs, ['type' => 'block']);
         $inlinStyle = !empty($style) ? " style=\"$style\"" : '';
         $content = "<$tag{$inlinStyle}>{$innerContent}</$tag>";
         $margin = self::spacing_style($attrs, ['prop' => 'margin', 'type' => 'blockMargin']);
@@ -724,7 +724,7 @@ class Parser
             $icons .= self::social_link($link, $args);
         }
 
-        $ulStyle = $vertical ? 'display:block;' : "display:flex;align-items:center;justify-content:{$align}";
+        $ulStyle = $vertical ? 'display:block;' : "display:flex;align-items:center;flex-wrap: wrap;justify-content:{$align}";
         return "<tr>
             <td style=\"{$style}letter-spacing:1px;text-transform:uppercase;line-height:1;\">
                 <ul style=\"margin:0;list-style:none;font-size:{$fontSize}px;{$ulStyle}\">
@@ -739,16 +739,17 @@ class Parser
         $attrs = $block['attrs'] ?? [];
         $service   = $attrs['service'] ?? '';
         $url       = esc_url($attrs['url'] ?? '#');
-        $iconUrl   = self::get_social_icon_url($service, $args['color']);
         $item      = '';
         $size = $args['size'];
         $style = $args['style'];
         $display = 'display:' . ($args['vertical'] ? 'block' : 'inline-block') . ';';
 
         if (empty($args['colorVal']) && empty($args['bgVal'])) {
+            $args['fix'] = true;
             $style .= self::brand_colors($service, $args['logoOnly']);
         }
 
+        $iconUrl   = self::get_social_icon_url($service, $args);
         if (!empty($iconUrl)) {
             $style .= 'line-height:0;';
             $item  = "<img src=\"{$iconUrl}\" width=\"{$size}\" height=\"{$size}\" alt=\"{$service}\" style=\"display:inline-block;width:{$size}px;height:{$size}px;\">";
@@ -763,12 +764,22 @@ class Parser
             </li>";
     }
 
-    private static function get_social_icon_url(string $service, $color = 'black'): string
+    private static function get_social_icon_url(string $service, $args): string
     {
+        $color = $args['color'] ?? 'black';
+
         $available = ['facebook', 'x', 'instagram', 'linkedin', 'youtube', 'pinterest', 'tiktok', 'twitch', 'whatsapp', 'discord', 'snapchat', 'threads', 'telegram', 'etsy', 'goodreads', 'medium', 'wordpress', 'twitter', 'vimeo', 'github',];
 
         if (!in_array($service, $available, true)) {
             return '';
+        }
+
+        // if ($color === 'black' && !empty($args['color']) && !in_array($service, ['x', 'threads','medium', 'github', 'tiktok'], true)) {
+        //     $color = 'white';
+        // }
+
+        if (empty($args['logoOnly']) && !empty($args['fix']) && $service !== 'goodreads') {
+            $color = 'white';
         }
 
         return CPS_BLOOM_MAILER_URL . "assets/socials/{$color}/{$service}.png";
@@ -792,7 +803,7 @@ class Parser
             'flickr'        => '#0461dd',
             'foursquare'    => '#e65678',
             'github'        => '#24292d',
-            'goodreads'     => '#382110',
+            'goodreads'     => '#eceadd',
             'google'        => '#ea4434',
             'gravatar'      => '#1d4fc4',
             'instagram'     => '#f00075',
@@ -898,7 +909,7 @@ class Parser
         $button_text  = $attrs['buttonText'] ?? 'Read More';
         $bg_color     = $attrs['bgColor'] ?? '#ffffff';
         $text_color   = $attrs['textColor'] ?? '#333333';
-        $padding      = self::spaces($attrs['padding'] ?? self::default_spacing('block'));
+        $padding      = self::spacing_style(['spacing' => $attrs['padding']], ['type' => 'block']);
 
         $args = [
             'post_type'      => 'post',
@@ -978,7 +989,7 @@ class Parser
         $button_text  = $attrs['buttonText'] ?? 'Shop Now';
         $bg_color     = $attrs['bgColor'] ?? '#ffffff';
         $text_color   = $attrs['textColor'] ?? '#333333';
-        $padding      = self::spaces($attrs['padding'] ?? self::default_spacing('block'));
+        $padding      = self::spacing_style(['spacing' => $attrs['padding']], ['type' => 'block']);
 
         $args = [
             'post_type'      => 'product',
@@ -1343,17 +1354,15 @@ class Parser
 
     private static function spacing_style(array $attrs, $args = []): string
     {
-        $prop = $args['prop'] ?? 'padding';
-        if (!in_array($prop, ['padding', 'margin'])) {
+        $spacing = [];
+        if (isset($args['prop']) && in_array($args['prop'], ['padding', 'margin'])) {
+            $spacing = $attrs['style']['spacing'][$args['prop']] ?? [];
+        } else if (isset($attrs['spacing'])) {
+            $spacing = $attrs['spacing'] ?? [];
+        } else if (empty($spacing) && !empty($args['type'])) {
+            $spacing = self::default_spacing($args['type'] ?? 'block');
+        } else {
             return '';
-        }
-
-        $style   = $attrs['style'] ?? [];
-        $spacing = $style['spacing'][$prop] ?? [];
-
-        if (empty($spacing) && !empty($args['type'])) {
-            $fallback = self::default_spacing($args['type'] ?? 'block');
-            return 'padding:' . self::spaces($fallback) . ';';
         }
 
         $css = '';
@@ -1701,63 +1710,15 @@ class Parser
     {
         $map = [
             'separator' => ['top' => '10px', 'bottom' => '10px'],
-            'block' => ['top' => '10px', 'right' => '10px', 'bottom' => '10px', 'left' => '10px'],
-            'blockMargin' => ['bottom' => '10px'],
+            'block' => ['top' => '15px', 'right' => '10px', 'bottom' => '15px', 'left' => '10px'],
+            'blockMargin' => ['bottom' => '20px'],
             'button' => ['top' => '12px', 'right' => '30px', 'bottom' => '12px', 'left' => '30px'],
             'space' => ['top' => '30px', 'bottom' => '30px'],
+            'content' => ['top' => '30px', 'right' => '30px', 'bottom' => '30px', 'left' => '30px'],
             'header' => ['top' => '20px', 'right' => '40px', 'bottom' => '30px', 'left' => '40px'],
             'footer' => ['top' => '20px', 'right' => '40px', 'bottom' => '20px', 'left' => '40px'],
         ];
         return $map[$type] ?? $map['block'];
-    }
-
-    public static function spaces($values, $def = '0px')
-    {
-        if (!is_array($values)) {
-            return $values ?: $def;
-        }
-
-        $top    = self::format($values['top'] ?? $def);
-        $right  = self::format($values['right'] ?? $def);
-        $bottom = self::format($values['bottom'] ?? $def);
-        $left   = self::format($values['left'] ?? $def);
-
-        // All same → single value
-        if ($top === $right && $right === $bottom && $bottom === $left) {
-            return $top;
-        }
-
-        // vertical + horizontal pairs
-        if ($top === $bottom && $right === $left) {
-            return "$top $right";
-        }
-
-        // top, horizontal, bottom
-        if ($right === $left) {
-            return "$top $right $bottom";
-        }
-
-        // full control
-        return "$top $right $bottom $left";
-    }
-
-    private static function format($value)
-    {
-        if ($value === '' || $value === null) {
-            return '';
-        }
-
-        // integers / floats
-        if (is_int($value) || is_float($value)) {
-            return $value . 'px';
-        }
-
-        // numeric strings
-        if (is_numeric($value)) {
-            return $value . 'px';
-        }
-
-        return $value;
     }
 
     /**
@@ -1850,7 +1811,6 @@ class Parser
     public static function generate($subject, $header, $block_markup, $footer, $design)
     {
         $blocks = self::parse($block_markup);
-
         $header_html    = self::header($header, $design);
         $footer_html    = self::footer($footer, $design);
         $blocks_html    = self::blocks($blocks);
@@ -1858,7 +1818,7 @@ class Parser
         $container_bg   = $design['containerBg'] ?? '#ffffff';
         $container_w    = (int) ($design['containerWidth'] ?? 600);
         $border_radius  = (int) ($design['borderRadius']  ?? 8);
-        $padding        = self::spaces($design['padding'] ?? self::default_spacing());
+        $padding        = self::spacing_style(['spacing' => $design['padding'] ?? self::default_spacing('content')]);
         $text_color     = $design['textColor']  ?? '#333333';
         $font_size      = (int) ($design['fontSize'] ?? 14);
         $font_family    = self::resolve_font_family($design['fontFamily'] ?? 'system');

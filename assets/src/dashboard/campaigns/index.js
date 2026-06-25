@@ -43,8 +43,7 @@ function setUrl(id = 0, $tab = 'campaigns', action = '') {
     if (action) {
         params.set('a', action);
     }
-
-    window.history.replaceState({}, "", `${window.location.pathname}?${params.toString()}`);
+    window.history.pushState({}, "", `${window.location.pathname}?${params.toString()}`);
 
     return `admin.php?${params.toString()}`;
 }
@@ -521,6 +520,7 @@ export default function Campaigns({ props }) {
     };
 
     const handleCloseEditor = () => {
+        fetchCampaigns();
         setIsEditorOpen(false);
         setCurrentCampaign(null);
         unSetUrl();

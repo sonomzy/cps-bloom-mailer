@@ -4,7 +4,7 @@
     "name": "cps-bloom-mailer/post",
     "title": "Posts",
     "category": "widgets",
-    "icon": "post",
+    "icon": "columns",
     "description": "Display posts in your email campaign.",
     "supports": {
         "html": false,

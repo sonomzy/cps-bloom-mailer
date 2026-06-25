@@ -17,6 +17,7 @@ import {
     SelectControl,
     __experimentalToolsPanel as ToolsPanel,
     __experimentalToolsPanelItem as ToolsPanelItem,
+    BaseControl,
 } from '@wordpress/components';
 import { __ } from '@wordpress/i18n';
 import { useSelect } from '@wordpress/data';
@@ -77,7 +78,7 @@ export function SocialLinksEdit(props) {
     const logosOnly = attributes.className?.includes('is-style-logos-only');
     const dropdownMenuProps = useToolsPanelDropdownMenuProps();
     const sizes = { small: 12, normal: 16, large: 24, huge: 32 };
-    
+
     // Remove icon background color when logos only style is selected or
     // restore it when any other style is selected.
     useEffect(() => {
@@ -114,31 +115,32 @@ export function SocialLinksEdit(props) {
                 ? InnerBlocks.ButtonBlockAppender
                 : undefined,
     });
-
-    const colorSettings = [];
-    if (!logosOnly) {
-        colorSettings.push({
-            // Use custom attribute as fallback to prevent loss of named color selection when
-            // switching themes to a new theme that does not have a matching named color.
-            value: iconBackgroundColorValue,
-            onChange: (colorValue) => {
-                f(colorValue);
-                setAttributes({
-                    iconBackgroundColorValue: colorValue,
-                });
-            },
-            label: __('Icon background'),
-            resetAllFilter: () => {
-                setIconBackgroundColor(undefined);
-                setAttributes({ iconBackgroundColorValue: undefined });
-            },
-        });
-    }
-
     const ICON_COLORS = [
         { label: 'Black', value: 'black', hex: '#000000' },
         { label: 'White', value: 'white', hex: '#ffffff' }
     ];
+
+    const colorSettings = [
+        {
+            value: background,
+            onChange: (colorValue) =>
+                setAttributes({ background: colorValue }),
+            label: __('Background'),
+        },
+    ];
+
+    if (!logosOnly) {
+        colorSettings.unshift({
+            value: iconBackgroundColorValue,
+            onChange: (colorValue) => {
+                setIconBackgroundColor(colorValue);
+                setAttributes({
+                    iconBackgroundColorValue: colorValue,
+                });
+            },
+            label: __('Text'),
+        });
+    }
 
     return (
         <>
@@ -192,43 +194,25 @@ export function SocialLinksEdit(props) {
                 </ToolsPanel>
             </InspectorControls>
             <InspectorControls group="color">
-                <SelectControl
-                    label="Icon Color"
-                    value={iconColor}
-                    options={ICON_COLORS.map((c) => ({
-                        label: c.label,
-                        value: c.value
-                    }))}
-                    onChange={(value) => {
-                        const selected = ICON_COLORS.find((c) => c.value === value);
-                        setAttributes({ iconColor: value });
-                        setAttributes({ iconColorValue: selected.hex });
-                    }}
-                />
+                <div className="cps-socials-color" style={{ gridColumn: 'span 2' }}>
+                    <SelectControl
+                        label="Icon Color"
+                        value={iconColor}
+                        options={ICON_COLORS.map((c) => ({
+                            label: c.label,
+                            value: c.value
+                        }))}
+                        onChange={(value) => {
+                            const selected = ICON_COLORS.find((c) => c.value === value);
+                            setAttributes({ iconColor: value });
+                            setAttributes({ iconColorValue: selected.hex });
+                        }}
+                    />
 
-                {!logosOnly && (
                     <>
                         <PanelColorSettings
                             __experimentalIsRenderedInSidebar
-                            title={__('Color')}
-                            colorSettings={[
-                                {
-                                    value: iconBackgroundColorValue,
-                                    onChange: (colorValue) => {
-                                        console.log(colorValue);
-                                        setIconBackgroundColor(colorValue);
-                                        setAttributes({
-                                            iconBackgroundColorValue: colorValue,
-                                        });
-                                    },
-                                    label: __('Text'),
-                                },
-                                {
-                                    value: background,
-                                    onChange: (colorValue) => setAttributes({background: colorValue}),
-                                    label: __('Background'),
-                                },
-                            ]}
+                            colorSettings={colorSettings}
                         />
                         <ContrastChecker
                             {...{
@@ -238,7 +222,7 @@ export function SocialLinksEdit(props) {
                             isLargeText={false}
                         />
                     </>
-                )}
+                </div>
             </InspectorControls>
 
             <ul {...innerBlocksProps} />

@@ -40,7 +40,15 @@ const Campaign = ({ loaded = {}, onClose = null }) => {
 
             if (response?.success) {
                 setCampaign(response.data);
-                if (!silent) activeNotice(response?.message || __('Campaign saved successfully', 'cps-bloom-mailer'), 'success');
+                if (!silent) {
+                    const params = new URLSearchParams(window.location.search);
+                    const cId = params.get('c');
+                    if (!cId || cId === '0') {
+                        params.set('c', response.data.id);
+                        window.history.pushState({}, "", `${window.location.pathname}?${params.toString()}`);
+                    }
+                    activeNotice(response?.message || __('Campaign saved successfully', 'cps-bloom-mailer'), 'success');
+                }
                 return true;
             } else {
                 if (!silent) activeNotice(response?.message);
@@ -85,8 +93,7 @@ const Campaign = ({ loaded = {}, onClose = null }) => {
                 const params = new URLSearchParams(window.location.search);
                 const cId = params.get('c');
 
-                if (!cId) {
-                    setLoading(false);
+                if (!cId || cId === '0') {
                     const formatted = formatCampaign();
                     setCampaign(formatted);
                     return;

@@ -152,7 +152,6 @@ export const HeaderPanel = ({ header, setHeaderContent }) => {
 
 export const FooterPanel = ({ footer, setFooterContent }) => {
     const setBlockSetting = (setting, value) => {
-        console.log(value);
         setFooterContent((prev) => ({
             ...prev,
             settings: { ...prev.settings, [setting]: value },

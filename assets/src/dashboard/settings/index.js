@@ -5,6 +5,8 @@ import { Button, PanelBody, TextControl, __experimentalNumberControl as NumberCo
 import { renderNotice, resetData, importJSON, exportJSON } from '../../utils';
 import './style.scss';
 
+const fallbackRegions = [{ value: "us-east-1", label: "US East (N. Virginia)" }, { value: "us-east-2", label: "US East (Ohio)" }, { value: "us-west-1", label: "US West (N. California)" }, { value: "us-west-2", label: "US West (Oregon)" }, { value: "ca-central-1", label: "Canada (Central)" }, { value: "ca-west-1", label: "Canada West (Calgary)" }, { value: "eu-west-1", label: "Europe (Ireland)" }, { value: "eu-west-2", label: "Europe (London)" }, { value: "eu-west-3", label: "Europe (Paris)" }, { value: "eu-central-1", label: "Europe (Frankfurt)" }, { value: "eu-north-1", label: "Europe (Stockholm)" }, { value: "eu-south-1", label: "Europe (Milan)" }, { value: "eu-central-2", label: "Europe (Zurich)" }, { value: "il-central-1", label: "Israel (Tel Aviv)" }, { value: "me-south-1", label: "Middle East (Bahrain)" }, { value: "me-central-1", label: "Middle East (UAE)" }, { value: "ap-south-1", label: "Asia Pacific (Mumbai)" }, { value: "ap-south-2", label: "Asia Pacific (Hyderabad)" }, { value: "ap-southeast-1", label: "Asia Pacific (Singapore)" }, { value: "ap-southeast-2", label: "Asia Pacific (Sydney)" }, { value: "ap-southeast-3", label: "Asia Pacific (Jakarta)" }, { value: "ap-southeast-5", label: "Asia Pacific (Malaysia)" }, { value: "ap-northeast-1", label: "Asia Pacific (Tokyo)" }, { value: "ap-northeast-2", label: "Asia Pacific (Seoul)" }, { value: "ap-northeast-3", label: "Asia Pacific (Osaka)" }, { value: "sa-east-1", label: "South America (São Paulo)" }, { value: "af-south-1", label: "Africa (Cape Town)" }];
+
 const SendSettings = ({ settings, handleChange }) => {
     return (
         <div className="settings-card">
@@ -36,7 +38,7 @@ const SendSettings = ({ settings, handleChange }) => {
                 <div className="fields-row fields-row--3">
                     <NumberControl
                         label={__('Batch Size', 'cps-bloom-mailer')}
-                        help={__('Number of emails to send per cron run to prevent server overload and comply with SMTP restrictions.', 'cps-bloom-mailer')}
+                        help={__('The number of emails processed each time the queue runs. Larger batches send campaigns faster but may increase server load.', 'cps-bloom-mailer')}
                         value={settings.batch_size || 50}
                         onChange={(value) => handleChange('batch_size', value)}
                         spinControls="custom"
@@ -50,16 +52,26 @@ const SendSettings = ({ settings, handleChange }) => {
 }
 
 const MailerSettings = ({ settings, handleChange }) => {
+    const [sesRegions, setSesRegions] = useState([]);
+    const [loading, setLoading] = useState(true);
+
+    useEffect(() => {
+        apiFetch({ path: '/cps/v1/ses-regions' })
+            .then((regions) => setSesRegions(regions))
+            .catch(() => setSesRegions(fallbackRegions))
+            .finally(() => setLoading(false));
+    }, []);
+
     return (
         <div className="settings-card">
             <SelectControl
                 className='settings-card__section'
                 __next40pxDefaultSize={true}
-                label={__('Mailer', 'chicpixies-subscriptions')}
+                label={__('Mailer', 'cps-bloom-mailer')}
                 value={settings.mailer ?? 'smtp'}
                 options={[
-                    { label: __('SMTP', 'chicpixies-subscriptions'), value: 'smtp' },
-                    { label: __('Amazon SES', 'chicpixies-subscriptions'), value: 'ses' },
+                    { label: __('SMTP', 'cps-bloom-mailer'), value: 'smtp' },
+                    { label: __('Amazon SES', 'cps-bloom-mailer'), value: 'ses' },
                 ]}
                 onChange={(value) => handleChange('mailer', value)}
             />
@@ -82,12 +94,12 @@ const MailerSettings = ({ settings, handleChange }) => {
 
                         <SelectControl
                             __next40pxDefaultSize={true}
-                            label={__('Encryption', 'chicpixies-subscriptions')}
+                            label={__('Encryption', 'cps-bloom-mailer')}
                             value={settings.smtp_encryption || 'smtp'}
                             options={[
-                                { label: __('TLS', 'chicpixies-subscriptions'), value: 'tls' },
-                                { label: __('SSL', 'chicpixies-subscriptions'), value: 'ssl' },
-                                { label: __('None', 'chicpixies-subscriptions'), value: 'none' },
+                                { label: __('TLS', 'cps-bloom-mailer'), value: 'tls' },
+                                { label: __('SSL', 'cps-bloom-mailer'), value: 'ssl' },
+                                { label: __('None', 'cps-bloom-mailer'), value: 'none' },
                             ]}
                             onChange={(value) => handleChange('smtp_encryption', value)}
                         />
@@ -126,24 +138,18 @@ const MailerSettings = ({ settings, handleChange }) => {
                     />
                     <SelectControl
                         __next40pxDefaultSize={true}
-                        label={__('Encryption', 'chicpixies-subscriptions')}
+                        label={__('Region', 'cps-bloom-mailer')}
                         value={settings.ses_region || 'us-east-1'}
-                        options={[
-                            { value: 'us-east-1', label: 'US East (N. Virginia)' },
-                            { value: 'us-west-2', label: 'US West (Oregon)' },
-                            { value: 'eu-west-1', label: 'Europe (Ireland)' },
-                            { value: 'eu-central-1', label: 'Europe (Frankfurt)' },
-                            { value: 'ap-southeast-1', label: 'Asia Pacific (Singapore)' },
-                            { value: 'ap-southeast-2', label: 'Asia Pacific (Sydney)' }
-                        ]}
+                        options={loading ? [{ value: '', label: 'Loading...' }] : sesRegions}
                         onChange={(value) => handleChange('ses_region', value)}
+                        disabled={loading}
                     />
                     <div className="fields-row">
                         <TextControl
                             label={__('Bounce Handler URL', 'cps-bloom-mailer')}
                             help={__('Please use this bounce handler url in your Amazon SES + SNS settings', 'cps-bloom-mailer')}
                             value={window.cbmData.hook || ''}
-                            readonly={true}
+                            readOnly={true}
                         />
                     </div>
                 </div>

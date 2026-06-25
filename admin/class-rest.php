@@ -15,6 +15,7 @@ class Rest
     public function register_routes()
     {
         $routes = [
+            'ses-regions' => ['GET', 'get_ses_regions'],
             'save' => ['POST', 'save_campaign'],
             'reset' => ['DELETE', 'reset'],
             'preview' => ['POST', 'preview'],
@@ -54,6 +55,40 @@ class Rest
                 },
             ]);
         }
+    }
+
+    public function get_ses_regions($request)
+    {
+        $cached = get_transient('cps_ses_regions');
+        if ($cached) {
+            return rest_ensure_response($cached);
+        }
+
+        $endpoints_url = 'https://raw.githubusercontent.com/boto/botocore/develop/botocore/data/endpoints.json';
+        $response      = wp_remote_get($endpoints_url, ['timeout' => 10]);
+
+        if (is_wp_error($response)) {
+            return $response;
+        }
+
+        $body = json_decode(wp_remote_retrieve_body($response), true);
+
+        $regions = [];
+        foreach ($body['partitions'] as $partition) {
+            if ($partition['partition'] !== 'aws') continue; // skip GovCloud, China
+            $service_regions = $partition['services']['email']['endpoints'] ?? [];
+            foreach ($service_regions as $region_id => $_) {
+                if (str_starts_with($region_id, 'fips-')) continue; // skip FIPS endpoints
+                $region_label = $partition['regions'][$region_id]['description'] ?? $region_id;
+                $regions[]    = ['value' => $region_id, 'label' => $region_label];
+            }
+        }
+
+        usort($regions, fn($a, $b) => strcmp($a['label'], $b['label']));
+
+        set_transient('cps_ses_regions', $regions, DAY_IN_SECONDS);
+
+        return rest_ensure_response($regions);
     }
 
     public function get_campaign($request)
@@ -149,7 +184,7 @@ class Rest
         if ($isAuto && empty($campaign_id)) return;
 
         if (empty($data)) {
-            return new WP_Error('missing_params', sprintf(/* translators: %s: campaign or template */__('%s data missing', 'chicpixies-subscriptions'), ucfirst($params['template'] ?? 'campaign')), array('status' => 400));
+            return new WP_Error('missing_params', sprintf(/* translators: %s: campaign or template */__('%s data missing', 'cps-bloom-mailer'), ucfirst($params['template'] ?? 'campaign')), array('status' => 400));
         }
 
         $campaign_data = Sanitize::campaigns([$campaign_id => $data], $isTemplate);
@@ -164,7 +199,7 @@ class Rest
             return $result;
         }
 
-        Queue::invalidate_render_cache($campaign_id);
+        Queue::invalidate_render_cache($result);
         return rest_ensure_response(array_merge(['success' => true], [
             'id'      => (int) $result,
             'message' => sprintf(
@@ -757,7 +792,7 @@ class Rest
         return rest_ensure_response(array(
             'success' => true,
             'settings' => $settings,
-            'message' => __('Settings saved successfully', 'chicpixies-subscriptions')
+            'message' => __('Settings saved successfully', 'cps-bloom-mailer')
         ));
     }
 
@@ -765,8 +800,8 @@ class Rest
     {
         $params = $request->get_json_params();
         $type = $params['type'] ?? '';
-        $success = ['message' => __('Reset successful!', 'chicpixies-subscriptions'),];
-        
+        $success = ['message' => __('Reset successful!', 'cps-bloom-mailer'),];
+
         if ($type === 'templates') {
             $templates = Templates::reset();
             if (is_wp_error($templates)) {

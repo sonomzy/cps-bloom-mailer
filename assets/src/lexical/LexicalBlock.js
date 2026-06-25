@@ -55,7 +55,7 @@ export function LexicalBlock({ blockId, initialHTML, selected, onChange, style, 
             },
         },
         onError: (error) => {
-            console.log(error);
+            console.error(error);
         },
         editorState: (() => {
             const isValidState =

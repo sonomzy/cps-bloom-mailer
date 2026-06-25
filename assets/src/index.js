@@ -12,6 +12,14 @@ import { mergetags } from './gutenberg/components/formats';
 import './styles.scss';
 
 domReady(() => {
+    const SettingsRoot = document.getElementById('cps-bloom-mailer-settings');
+    if (SettingsRoot) {
+        import(/* webpackChunkName: "Settings" */ './dashboard/settings').then(({ default: Settings }) => {
+            const root = createRoot(SettingsRoot);
+            root.render(<Settings />);
+        });
+    }
+
     registerCoreBlocks();
     registerBlockType(productMeta, { edit: ProductEdit, save: () => null });
     registerBlockType(postMeta, { edit: PostEdit, save: () => null });
@@ -37,14 +45,6 @@ domReady(() => {
         import(/* webpackChunkName: "campaign" */ './dashboard/campaign').then(({ default: Campaign }) => {
             const root = createRoot(EditorRoot);
             root.render(<Campaign />);
-        });
-    }
-
-    const SettingsRoot = document.getElementById('cps-bloom-mailer-settings');
-    if (SettingsRoot) {
-        import(/* webpackChunkName: "Settings" */ './dashboard/settings').then(({ default: Settings }) => {
-            const root = createRoot(SettingsRoot);
-            root.render(<Settings />);
         });
     }
 });

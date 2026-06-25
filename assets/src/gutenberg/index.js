@@ -233,16 +233,18 @@ function Inner({ campaign, onSave, loading, templates, isTemplate, sendDemo, sen
                             {editorMode === 'code' ? (
                                 <CodeEditor value={codeValue} onChange={setCodeValue} onClose={() => setEditorMode('visual')} />
                             ) : (
-                                <Canvas
-                                    isMobile={isMobile}
-                                    header={header}
-                                    footer={footer}
-                                    design={design}
-                                    selectedSection={selectedSection}
-                                    setHeaderContent={setHeaderContent}
-                                    setFooterContent={setFooterContent}
-                                    setSelectedSection={setSelectedSection}
-                                />
+                                <div className="cps-bloom-mailer-wrapper" style={{ background: design?.bodyBg }}>
+                                    <Canvas
+                                        isMobile={isMobile}
+                                        header={header}
+                                        footer={footer}
+                                        design={design}
+                                        selectedSection={selectedSection}
+                                        setHeaderContent={setHeaderContent}
+                                        setFooterContent={setFooterContent}
+                                        setSelectedSection={setSelectedSection}
+                                    />
+                                </div>
                             )}
                         </>
                     }

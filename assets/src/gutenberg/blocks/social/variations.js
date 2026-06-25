@@ -57,5 +57,6 @@ const variations = AVAILABLE_SERVICES.map((service) => ({
     scope: ['inserter', 'block'],
 }));
 
+
 export default variations;
 export { SERVICE_LABELS, AVAILABLE_SERVICES };

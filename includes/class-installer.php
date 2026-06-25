@@ -286,6 +286,7 @@ class Installer
 		$defaults = array(
 			'mailer'          => 'smtp',
 			'batch_size'      => 50,
+			'cron_frequency'  => 'every_minute',
 			'from_name'       => get_bloginfo('name'),
 			'from_email'      => get_option('admin_email'),
 			'reply_to'        => '',
@@ -313,7 +314,7 @@ class Installer
 	public static function delete($campaign_ids = null)
 	{
 		if (!current_user_can('manage_options')) {
-			return new Wp_Error('deletion_failed', __('You are not allowed to do this', 'chicpixies-subscriptions'));
+			return new Wp_Error('deletion_failed', __('You are not allowed to do this', 'cps-bloom-mailer'));
 		}
 
 		global $wpdb;
@@ -347,11 +348,11 @@ class Installer
 
 		$campaign_ids = array_values(array_filter(array_map('absint', $campaign_ids)));
 		if (empty($campaign_ids)) {
-			return new Wp_Error('deletion_failed', __('Subscription id must be a single or array of numeric values', 'chicpixies-subscriptions'));
+			return new Wp_Error('deletion_failed', __('Subscription id must be a single or array of numeric values', 'cps-bloom-mailer'));
 		}
 
 		$ids_placeholder = implode(',', $campaign_ids);
-		$rows = $wpdb->get_results("SELECT id, FROM $campaigns WHERE id IN ($ids_placeholder)");
+		$rows = $wpdb->get_results("SELECT id FROM $campaigns WHERE id IN ($ids_placeholder)");
 
 		$wpdb->query('START TRANSACTION');
 		try {

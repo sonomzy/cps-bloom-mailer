@@ -8,6 +8,8 @@ import {
     ToggleControl,
     TextControl,
     __experimentalGrid as Grid,
+    __experimentalToggleGroupControl as ToggleGroupControl,
+    __experimentalToggleGroupControlOption as ToggleGroupControlOption,
 } from '@wordpress/components';
 import { useSelect } from '@wordpress/data';
 import PostSelector from '../../../components/PostSelector';
@@ -88,45 +90,46 @@ export default function Edit({ attributes, setAttributes, className }) {
     return (
         <>
             <InspectorControls>
-                <PanelBody title={__('Settings', 'cps-bloom-mailer')}>
+                <PanelBody title={__('Settings')}>
                     <PostSelector
                         selectedPosts={ids}
                         wpStates={{ postsData, loadingPosts }}
                         setSelectedPosts={(value) => setAttributes({ ids: value })}
                         type="posts"
-                        label={__('Feature specific posts (overrides other settings)', 'cps-bloom-mailer')}
+                        label={__('Feature specific posts (overrides other settings)')}
                     />
 
                     <RangeControl
                         __next40pxDefaultSize
                         __nextHasNoMarginBottom
-                        label={__('Number of posts', 'cps-bloom-mailer')}
+                        label={__('Number of posts')}
                         value={count}
                         min={1}
                         max={10}
                         onChange={(value) => setAttributes({ count: value })}
                     />
                     {count > 1 &&
-                        <RangeControl
-                            __next40pxDefaultSize
+                        <ToggleGroupControl
                             __nextHasNoMarginBottom
-                            label={__('Columns', 'cps-bloom-mailer')}
+                            isBlock
+                            label={__('Columns')}
                             value={columns}
-                            min={1}
-                            max={4}
                             onChange={(value) => setAttributes({ columns: value })}
-                        />
+                        >
+                            <ToggleGroupControlOption label="1" value={1} />
+                            <ToggleGroupControlOption label="2" value={2} />
+                        </ToggleGroupControl>
                     }
                     <SelectControl
                         __next40pxDefaultSize
-                        label={__('Order by', 'cps-bloom-mailer')}
+                        label={__('Order by')}
                         value={orderBy}
                         options={[
-                            { label: __('None', 'cps-bloom-mailer'), value: 'none' },
-                            { label: __('Newest', 'cps-bloom-mailer'), value: 'newest' },
-                            { label: __('Oldest', 'cps-bloom-mailer'), value: 'oldest' },
-                            { label: __('Popularity', 'cps-bloom-mailer'), value: 'popular' },
-                            { label: __('Random', 'cps-bloom-mailer'), value: 'rand' },
+                            { label: __('None'), value: 'none' },
+                            { label: __('Newest'), value: 'newest' },
+                            { label: __('Oldest'), value: 'oldest' },
+                            { label: __('Popularity'), value: 'popular' },
+                            { label: __('Random'), value: 'rand' },
                         ]}
                         onChange={(value) => setAttributes({ orderBy: value })}
                     />
@@ -134,7 +137,7 @@ export default function Edit({ attributes, setAttributes, className }) {
                     <FormTokenField
                         __nextHasNoMarginBottom
                         __experimentalExpandOnFocus
-                        label={__('Categories', 'cps-bloom-mailer')}
+                        label={__('Categories')}
                         value={(categories ?? [])
                             .map(id => postCategories.find(cat => cat.id === id)?.name ?? '')
                             .filter(Boolean)
@@ -145,21 +148,21 @@ export default function Edit({ attributes, setAttributes, className }) {
 
                     <ToggleControl
                         __nextHasNoMarginBottom
-                        label={__('Show featured image', 'cps-bloom-mailer')}
+                        label={__('Show featured image')}
                         checked={showImage}
                         onChange={(value) => setAttributes({ showImage: value })}
                     />
 
                     <ToggleControl
                         __nextHasNoMarginBottom
-                        label={__('Show excerpt', 'cps-bloom-mailer')}
+                        label={__('Show excerpt')}
                         checked={showExcerpt}
                         onChange={(value) => setAttributes({ showExcerpt: value })}
                     />
 
                     <ToggleControl
                         __nextHasNoMarginBottom
-                        label={__('Show button', 'cps-bloom-mailer')}
+                        label={__('Show button')}
                         checked={showButton}
                         onChange={(value) => setAttributes({ showButton: value })}
                     />
@@ -167,7 +170,7 @@ export default function Edit({ attributes, setAttributes, className }) {
                     {showButton && (
                         <TextControl
                             __nextHasNoMarginBottom
-                            label={__('Button text', 'cps-bloom-mailer')}
+                            label={__('Button text')}
                             value={buttonText}
                             onChange={(value) => setAttributes({ buttonText: value })}
                         />
@@ -180,8 +183,8 @@ export default function Edit({ attributes, setAttributes, className }) {
                 {!posts || posts.length === 0 ? (
                     <p style={{ textAlign: 'center', color: '#999' }}>
                         {(isResolving || posts === null)
-                            ? __('Loading posts…', 'cps-bloom-mailer')
-                            : __('No posts found', 'cps-bloom-mailer')}
+                            ? __('Loading posts…')
+                            : __('No posts found')}
                     </p>
                 ) : (
                     <Grid
@@ -231,7 +234,7 @@ export default function Edit({ attributes, setAttributes, className }) {
                                             color: buttonTextColor,
                                             fontSize: 14,
                                         }}>
-                                            {buttonText || __('Read More', 'cps-bloom-mailer')}
+                                            {buttonText || __('Read More')}
                                         </div>
                                     )}
                                 </div>

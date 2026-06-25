@@ -12,7 +12,7 @@ import useNotice from './useNotice';
  * with successfully parsed import data.
  *
  * @param {Object}   props
- * @param {string}   props.filename       - Base filename for the exported file, e.g. 'cps-mailer-settings'
+ * @param {string}   props.filename       - Base filename for the exported file, e.g. 'cps-bloom-export'
  * @param {Function} props.getExportData  - Called on export; should return the object to serialize
  * @param {Function} props.onImport       - Called with the parsed JSON object after the user confirms import
  * @param {Function} props.validateImport - Optional. Called with parsed data; should throw if invalid
@@ -40,10 +40,10 @@ const ImportExport = ({ filename = 'cps-export', getExportData, onImport, valida
             document.body.removeChild(link);
             URL.revokeObjectURL(url);
 
-            notify(__('Exported successfully!', 'cps-mailer'), 'success');
+            notify(__('Exported successfully!', 'cps-bloom-mailer'), 'success');
         } catch (error) {
             console.error('Export error:', error);
-            notify(__('Failed to export. Please try again.', 'cps-mailer'));
+            notify(__('Failed to export. Please try again.', 'cps-bloom-mailer'));
         }
     };
 
@@ -52,7 +52,7 @@ const ImportExport = ({ filename = 'cps-export', getExportData, onImport, valida
         if (!file) return;
 
         if (!file.name.endsWith('.json')) {
-            notify(__('Please select a valid JSON file.', 'cps-mailer'));
+            notify(__('Please select a valid JSON file.', 'cps-bloom-mailer'));
             return;
         }
 
@@ -69,7 +69,7 @@ const ImportExport = ({ filename = 'cps-export', getExportData, onImport, valida
                 setPendingImport(parsed);
             } catch (error) {
                 console.error('Import parse error:', error);
-                notify(__('Failed to import. Please check the file format.', 'cps-mailer'));
+                notify(__('Failed to import. Please check the file format.', 'cps-bloom-mailer'));
             }
 
             if (fileInputRef.current) {
@@ -78,7 +78,7 @@ const ImportExport = ({ filename = 'cps-export', getExportData, onImport, valida
         };
 
         reader.onerror = () => {
-            notify(__('Failed to read file. Please try again.', 'cps-mailer'));
+            notify(__('Failed to read file. Please try again.', 'cps-bloom-mailer'));
         };
 
         reader.readAsText(file);
@@ -95,10 +95,10 @@ const ImportExport = ({ filename = 'cps-export', getExportData, onImport, valida
         <>
             <div style={{ marginBottom: '15px' }}>
                 <Button variant="secondary" onClick={handleExport}>
-                    {__('Export Settings', 'cps-mailer')}
+                    {__('Export Settings', 'cps-bloom-mailer')}
                 </Button>
                 <Text variant="muted" style={{ display: 'block', marginTop: '8px' }}>
-                    {__('Download your settings as a JSON file', 'cps-mailer')}
+                    {__('Download your settings as a JSON file', 'cps-bloom-mailer')}
                 </Text>
             </div>
 
@@ -111,17 +111,17 @@ const ImportExport = ({ filename = 'cps-export', getExportData, onImport, valida
                     ref={fileInputRef}
                 />
                 <Button variant="secondary" onClick={() => fileInputRef.current?.click()}>
-                    {__('Import Settings', 'cps-mailer')}
+                    {__('Import Settings', 'cps-bloom-mailer')}
                 </Button>
                 <Text variant="muted" style={{ display: 'block', marginTop: '8px' }}>
-                    {__('Upload a previously exported settings file', 'cps-mailer')}
+                    {__('Upload a previously exported settings file', 'cps-bloom-mailer')}
                 </Text>
             </div>
 
             <ConfirmActionDialog
                 isOpen={!!pendingImport}
-                message={__('Are you sure you want to import these settings? This will overwrite your current settings.', 'cps-mailer')}
-                confirmLabel={__('Import', 'cps-mailer')}
+                message={__('Are you sure you want to import these settings? This will overwrite your current settings.', 'cps-bloom-mailer')}
+                confirmLabel={__('Import', 'cps-bloom-mailer')}
                 onConfirm={handleConfirmImport}
                 onCancel={() => setPendingImport(null)}
             />

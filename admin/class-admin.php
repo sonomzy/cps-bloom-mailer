@@ -105,20 +105,22 @@ class Admin
 		$localize_data = [];
 
 		if ($_GET['page'] === 'cps-bloom-mailer-settings') {
-			$localize_data = ['settings' => Settings::get_all()];
+			$localize_data = [
+				'settings' => Settings::get_all(),
+				'hook' => home_url('/cps-bloom-mailer/ses-webhook/')
+			];
+		} else {
+			$localize_data = array(
+				'placeholders'	=> Helpers::get_placeholders(),
+				'editor_settings' => $this->block_editor_settings(),
+				'fontFamilies' => Helpers::get_font_family_options(),
+				'default' => self::default(),
+				'events' => Helpers::get_events(),
+				'id' => $_REQUEST['c'] ?? 0,
+				'restUrl' => rest_url('cps/v1/mailer'),
+				'nonce'   => wp_create_nonce('wp_rest'),
+			);
 		}
-
-		$localize_data = array(
-			'placeholders'	=> Helpers::get_placeholders(),
-			'editor_settings' => $this->block_editor_settings(),
-			'fontFamilies' => Helpers::get_font_family_options(),
-			'default' => self::default(),
-			'events' => Helpers::get_events(),
-			'id' => $_REQUEST['c'] ?? 0,
-			'restUrl' => rest_url('cps/v1/mailer'),
-			'nonce'   => wp_create_nonce('wp_rest'),
-			'hook' => home_url('/cps-bloom-mailer/ses-webhook/')
-		);
 
 		wp_localize_script('cps-bloom-mailer-editor', 'cbmData', apply_filters('cps_mailer_localize_campaign_data', $localize_data));
 		// Block editor needs this global

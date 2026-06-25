@@ -29,13 +29,3 @@ register_activation_hook(__FILE__, array('ChicpixiesBloomMailer\\Mailer', 'activ
 register_deactivation_hook(__FILE__, array('ChicpixiesBloomMailer\\Mailer', 'deactivate'));
 
 Mailer::instance();
-
-add_action('template_redirect', function() {
-    if (strpos($_SERVER['REQUEST_URI'], 'cps-bloom-mailer') !== false) {
-        error_log('REQUEST_URI: ' . $_SERVER['REQUEST_URI']);
-        error_log('query_var: ' . get_query_var('cps_mailer_action'));
-        global $wp_query;
-        error_log('WP_Query vars: ' . print_r($wp_query->query_vars, true));
-        die('Debug: check error log');
-    }
-}, 1);

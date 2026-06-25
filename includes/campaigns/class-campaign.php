@@ -33,7 +33,7 @@ class Campaign
 		if (empty($inserted)) {
 			return new WP_Error(
 				'db_insert_error',
-				__('Failed to create new campaign.', 'chicpixies-subscriptions'),
+				__('Failed to create new campaign.', 'cps-bloom-mailer'),
 				['status' => 500]
 			);
 		}
@@ -72,7 +72,7 @@ class Campaign
 		if (empty($updated)) {
 			return new WP_Error(
 				'db_update_error',
-				__('Failed to update campaign.', 'chicpixies-subscriptions'),
+				__('Failed to update campaign.', 'cps-bloom-mailer'),
 				['status' => 500]
 			);
 		}
@@ -179,7 +179,7 @@ class Campaign
 		}
 
 		self::update($id, ['status' => 'paused']);
-		Queue::invalidate_render_cache($id);
+		Queue::invalidate_render_cache(intVal($id));
 		return true;
 	}
 
