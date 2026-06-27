@@ -106,11 +106,19 @@ class Bloom_Bridge
 				$data['tags'] = Tags::resolve_audience_ids(self::str_to_array($data['tags']));
 			}
 
+			// Parse tags: "newsletter, vip, sale" -> ['newsletter', 'vip', 'sale']
+			if (!empty($data['lists'])) {
+				$data['lists'] = Lists::resolve_audience_ids(self::str_to_array($data['lists']));
+			}
+
 			if (!empty($defaults['tags'])) {
-				$data['tags'] = array_unique(array_merge(
-					$data['tags'] ?? [],
-					$defaults['tags']
-				));
+				$tags = $data['tags'] ?: [];
+				$data['tags'] = array_unique(array_merge($tags, $defaults['tags']));
+			}
+
+			if (!empty($defaults['lists'])) {
+				$lists = $data['lists'] ?: [];
+				$data['lists'] = array_unique(array_merge($lists, $defaults['lists']));
 			}
 
 			if (!empty($data['created_at'])) {
@@ -127,7 +135,8 @@ class Bloom_Bridge
 				'last_name'  => '',
 				'platform'   => '',
 				'source'     => 'import',
-				'lists'      => !empty($defaults['lists']) ? $defaults['lists'] : [],
+				'lists'      => [],
+				'tags'		 => [],
 				'status'     => $defaults['status'] ?? 'subscribed',
 				'created_at' => current_time('mysql'),
 				'updated_at' => $data['created_at'] ?? current_time('mysql'),
