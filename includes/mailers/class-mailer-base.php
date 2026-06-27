@@ -18,9 +18,9 @@ abstract class Mailer_Base {
 	 *     @type string $from_email
 	 *    @type string $reply_to
 	 * }
-	 * @return bool
+	 * @return mixed bool or Wp_Error
 	 */
-	abstract public function send( array $args ): bool;
+	abstract public function send( array $args ): mixed;
 
 	protected function get_default_from_name(): string {
 		return Settings::get( 'from_name', get_bloginfo( 'name' ) );

@@ -2,6 +2,8 @@
 
 namespace ChicpixiesBloomMailer;
 
+use WP_Error;
+
 if (! defined('ABSPATH')) {
 	exit;
 }
@@ -11,8 +13,8 @@ class Mailer_SMTP extends Mailer_Base
 	protected ?string $from_email = null;
 	protected ?string $from_name  = null;
 	protected ?string $reply_to   = null;
-	
-	public function send(array $args): bool
+
+	public function send(array $args): mixed
 	{
 		$to         = $args['to'] ?? '';
 		$subject    = $args['subject'] ?? '';
@@ -22,7 +24,10 @@ class Mailer_SMTP extends Mailer_Base
 		$reply_to	= $args['reply_to'] ?: $this->get_default_reply_to();
 
 		if (! $to || ! $subject || ! $html) {
-			return false;
+			$isTo = !$to;
+			$isSub = !$subject;
+			$isHtml = !$html;
+			return new WP_Error('ses_error', "missing required data:Recipient:{$isTo}, Subject:{$isSub}, Html:{$isHtml}", ['status' => $code]);
 		}
 
 		// Hook into wp_mail to set SMTP credentials
@@ -43,6 +48,11 @@ class Mailer_SMTP extends Mailer_Base
 		remove_action('phpmailer_init', array($this, 'configure_phpmailer'));
 		remove_filter('wp_mail_from', array($this, 'set_from_email'));
 		remove_filter('wp_mail_from_name', array($this, 'set_from_name'));
+
+		if (is_wp_error($result)) {
+			error_log('CPS Mailer SES error: ' . $result->get_error_message());
+			return $result;
+		}
 
 		return (bool) $result;
 	}

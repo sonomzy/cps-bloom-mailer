@@ -48,7 +48,7 @@ class Installer
 		$json_type = version_compare($mysql_version, '5.7.8', '>=') ? 'JSON' : 'LONGTEXT';
 
 		$sql = "CREATE TABLE {$table} (
-			id bigint(20) unsigned NOT NULL AUTO_INCREMENT,
+			id BIGINT(20) UNSIGNED NOT NULL AUTO_INCREMENT,
 			title varchar(255) NOT NULL DEFAULT '',
 			subject varchar(255) NOT NULL DEFAULT '',
 			design LONGTEXT NOT NULL,
@@ -80,9 +80,9 @@ class Installer
 		$table = $wpdb->prefix . 'cps_mailer_sends';
 
 		$sql = "CREATE TABLE {$table} (
-			id bigint(20) unsigned NOT NULL AUTO_INCREMENT,
-			campaign_id bigint(20) unsigned NOT NULL,
-			subscriber_id bigint(20) unsigned NOT NULL,
+			id BIGINT(20) UNSIGNED NOT NULL AUTO_INCREMENT,
+			campaign_id BIGINT(20) UNSIGNED NOT NULL,
+			subscriber_id BIGINT(20) UNSIGNED NOT NULL,
 			email varchar(100) NOT NULL DEFAULT '',
 			status varchar(20) NOT NULL DEFAULT 'pending',
 			sent_at datetime DEFAULT NULL,
@@ -102,9 +102,9 @@ class Installer
 		$table = $wpdb->prefix . 'cps_mailer_events';
 
 		$sql = "CREATE TABLE {$table} (
-			id bigint(20) unsigned NOT NULL AUTO_INCREMENT,
-			campaign_id bigint(20) unsigned NOT NULL,
-			subscriber_id bigint(20) unsigned NOT NULL,
+			id BIGINT(20) UNSIGNED NOT NULL AUTO_INCREMENT,
+			campaign_id BIGINT(20) UNSIGNED NOT NULL,
+			subscriber_id BIGINT(20) UNSIGNED NOT NULL,
 			event_type varchar(20) NOT NULL DEFAULT '',
 			meta longtext DEFAULT NULL,
 			created_at datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
@@ -124,7 +124,7 @@ class Installer
 		$table = $wpdb->prefix . 'cps_mailer_settings';
 
 		$sql = "CREATE TABLE {$table} (
-			id bigint(20) unsigned NOT NULL AUTO_INCREMENT,
+			id BIGINT(20) UNSIGNED NOT NULL AUTO_INCREMENT,
 			option_key varchar(100) NOT NULL DEFAULT '',
 			option_value longtext DEFAULT NULL,
 			PRIMARY KEY (id),
@@ -143,7 +143,7 @@ class Installer
 		$table = $wpdb->prefix . 'cps_mailer_templates';
 
 		$sql = "CREATE TABLE {$table} (
-			id bigint(20) unsigned NOT NULL AUTO_INCREMENT,
+			id BIGINT(20) UNSIGNED NOT NULL AUTO_INCREMENT,
 			template_key varchar(100) NOT NULL DEFAULT '',
 			title varchar(255) NOT NULL DEFAULT '',
 			subject varchar(255) NOT NULL DEFAULT '',
@@ -171,9 +171,9 @@ class Installer
 		$table = $wpdb->prefix . 'cps_mailer_automations';
 
 		$sql = "CREATE TABLE {$table} (
-			id bigint(20) unsigned NOT NULL AUTO_INCREMENT,
+			id BIGINT(20) UNSIGNED NOT NULL AUTO_INCREMENT,
 			name varchar(255) NOT NULL DEFAULT '',
-			campaign_id bigint(20) unsigned NOT NULL,
+			campaign_id BIGINT(20) UNSIGNED NOT NULL,
 			event varchar(100) NOT NULL DEFAULT '',
 			status varchar(20) NOT NULL DEFAULT 'active',
 			last_triggered_at datetime DEFAULT NULL,
@@ -194,16 +194,37 @@ class Installer
 		$table = $wpdb->prefix . 'cps_mailer_suppressions';
 
 		$sql = "CREATE TABLE {$table} (
-			id bigint(20) unsigned NOT NULL AUTO_INCREMENT,
+			id BIGINT(20) UNSIGNED NOT NULL AUTO_INCREMENT,
 			email varchar(100) NOT NULL DEFAULT '',
 			reason varchar(20) NOT NULL DEFAULT 'unsubscribed',
 			source varchar(20) NOT NULL DEFAULT 'manual',
-			campaign_id bigint(20) unsigned DEFAULT NULL,
+			campaign_id BIGINT(20) UNSIGNED DEFAULT NULL,
 			detail text DEFAULT NULL,
 			created_at datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
 			PRIMARY KEY (id),
 			UNIQUE KEY email (email),
 			KEY reason (reason)
+		) {$charset_collate};";
+
+		dbDelta($sql);
+	}
+
+	private static function create_segments_table($charset_collate)
+	{
+		global $wpdb;
+
+		$table = $wpdb->prefix . 'cps_mailer_segments';
+
+		$sql = "CREATE TABLE {$table} (
+			id BIGINT(20) UNSIGNED NOT NULL AUTO_INCREMENT,
+			name varchar(255) NOT NULL,
+			slug varchar(200) NOT NULL,
+			description LONGTEXT NULL,
+			rules LONGTEXT NOT NULL,
+			created_at datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
+			updated_at datetime NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+			PRIMARY KEY (id),
+			UNIQUE KEY slug (slug)
 		) {$charset_collate};";
 
 		dbDelta($sql);
@@ -216,7 +237,7 @@ class Installer
 		$table = $wpdb->prefix . 'wp_cps_mailer_sequences';
 
 		$sql = "CREATE TABLE {$table} (
-			id bigint unsigned AUTO_INCREMENT PRIMARY KEY,
+			id BIGINT(20) UNSIGNED AUTO_INCREMENT PRIMARY KEY,
 			name varchar(255) NOT NULL,
 			status varchar(20) DEFAULT 'active',
 			created_at datetime DEFAULT CURRENT_TIMESTAMP
@@ -232,9 +253,9 @@ class Installer
 		$table = $wpdb->prefix . 'wp_cps_mailer_sequence_steps';
 
 		$sql = "CREATE TABLE {$table} (
-			id bigint unsigned AUTO_INCREMENT PRIMARY KEY,
-			sequence_id bigint unsigned NOT NULL,
-			campaign_id bigint unsigned NOT NULL,
+			id BIGINT(20) UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+			sequence_id BIGINT(20) UNSIGNED NOT NULL,
+			campaign_id BIGINT(20) UNSIGNED NOT NULL,
 			step_order int NOT NULL DEFAULT 0,
 			delay_days int NOT NULL DEFAULT 0,  -- days after previous step
 			KEY sequence_id (sequence_id)
@@ -250,9 +271,9 @@ class Installer
 		$table = $wpdb->prefix . 'wp_cps_mailer_sequence_progress';
 
 		$sql = "CREATE TABLE {$table} (
-			id bigint unsigned AUTO_INCREMENT PRIMARY KEY,
-			sequence_id bigint unsigned NOT NULL,
-			subscriber_id bigint unsigned NOT NULL,
+			id BIGINT(20) UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+			sequence_id BIGINT(20) UNSIGNED NOT NULL,
+			subscriber_id BIGINT(20) UNSIGNED NOT NULL,
 			current_step int NOT NULL DEFAULT 0,
 			next_send_at datetime DEFAULT NULL,
 			status varchar(20) DEFAULT 'active',

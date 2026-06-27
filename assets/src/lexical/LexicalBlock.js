@@ -36,7 +36,7 @@ function isValidUrl(string) {
     }
 }
 
-export function LexicalBlock({ blockId, initialHTML, selected, onChange, style, blockType = null, savedState = null, blockState = {}, placeholder = '', onFocus = () => { }, onBlur = () => { }}) {
+export function LexicalBlock({ blockId, initialHTML, selected, onChange, style, blockType = null, savedState = null, blockState = {}, placeholder = '', onFocus = () => { }, onBlur = () => { } }) {
     const { setIsEditing } = useEditing();
     const initialConfig = useMemo(() => ({
         namespace: `block-${blockId}`,
@@ -148,7 +148,7 @@ export function LexicalBlock({ blockId, initialHTML, selected, onChange, style, 
             {selected === blockId && (
                 <>
                     <FloatingMenuPlugin blockType={blockType ?? blockId} />
-                    <BlockToolbar blockType={blockType ?? blockId} blockState={blockState} />
+                    {selected !== 'header-desc' && (<BlockToolbar blockType={blockType ?? blockId} blockState={blockState} />)}
                 </>
             )}
         </LexicalComposer>

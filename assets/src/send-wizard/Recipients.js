@@ -5,17 +5,17 @@ import { trash, plus } from '@wordpress/icons';
 import apiFetch from '@wordpress/api-fetch';
 
 const ALL_LISTS = '';
-const ALL_TAGS  = '';
+const ALL_TAGS = '';
 
 function RecipientRow({ row, lists, tags, onChange, onRemove, removable }) {
     const tagOptions = [
         { label: __('All contacts on selected list', 'cps-bloom-mailer'), value: '' },
-        ...tags.map(t => ({ label: t.title, value: String(t.id) })),
+        ...tags.map(t => ({ label: t.name, value: t.id })),
     ];
 
     const listOptions = [
         { label: __('All Lists', 'cps-bloom-mailer'), value: '' },
-        ...lists.map(l => ({ label: l.title, value: String(l.id) })),
+        ...lists.map(l => ({ label: l.name, value: l.id })),
     ];
 
     return (
@@ -103,7 +103,7 @@ function RecipientGroup({ title, description, rows, lists, tags, onChange }) {
 
 export default function Recipients({ recipients, setRecipients }) {
     const [lists, setLists] = useState([]);
-    const [tags,  setTags]  = useState([]);
+    const [tags, setTags] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
 

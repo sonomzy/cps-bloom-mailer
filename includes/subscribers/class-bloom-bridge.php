@@ -2,7 +2,9 @@
 
 namespace ChicpixiesBloomMailer;
 
-use ChicpixiesBloom\Database;
+use ChicpixiesBloom\Subscribers;
+use ChicpixiesBloom\Lists;
+use ChicpixiesBloom\Tags;
 
 if (! defined('ABSPATH')) {
 	exit;
@@ -12,7 +14,6 @@ if (! defined('ABSPATH')) {
  * Bridge between cps-bloom-mailer and cps-bloom subscriber data.
  *
  * Update the table name and column mappings below to match
- * your actual cps-bloom database schema.
  */
 class Bloom_Bridge
 {
@@ -32,8 +33,6 @@ class Bloom_Bridge
 	const COL_STATUS = 'status';
 	const COL_FNAME   = 'first_name';
 	const COL_LNAME   = 'last_name';
-	const COL_LIST   = 'list';
-	const COL_TAGS   = 'tags';
 
 	/**
 	 * The value in the status column that means "active/subscribed".
@@ -58,7 +57,7 @@ class Bloom_Bridge
 	 *   skipped_rows: array
 	 * }
 	 */
-	public static function import_csv(array $rows, array $map): array
+	public static function import_csv(array $rows, array $map, array $defaults): array
 	{
 		global $wpdb;
 		$table = $wpdb->prefix . self::TABLE;
@@ -103,20 +102,23 @@ class Bloom_Bridge
 			}
 
 			// Parse tags: "newsletter, vip, sale" -> ['newsletter', 'vip', 'sale']
-			if (!empty($data['tags']) && is_string($data['tags'])) {
-				$data['tags'] = array_values(
-					array_filter(array_map('trim', explode(',', $data['tags'])))
-				);
-			} else {
-				$data['tags'] = [];
+			if (!empty($data['tags'])) {
+				$data['tags'] = Tags::resolve_audience_ids(self::str_to_array($data['tags']));
 			}
 
-			if (!empty($data['date_created'])) {
-				$data['date_created'] = self::normalize_date($data['date_created']);
+			if (!empty($defaults['tags'])) {
+				$data['tags'] = array_unique(array_merge(
+					$data['tags'] ?? [],
+					$defaults['tags']
+				));
 			}
 
-			if (!empty($data['date_updated'])) {
-				$data['date_updated'] = self::normalize_date($data['date_updated']);
+			if (!empty($data['created_at'])) {
+				$data['created_at'] = self::normalize_date($data['created_at']);
+			}
+
+			if (!empty($data['updated_at'])) {
+				$data['updated_at'] = self::normalize_date($data['updated_at']);
 			}
 
 			// Apply defaults for anything not mapped
@@ -125,10 +127,10 @@ class Bloom_Bridge
 				'last_name'  => '',
 				'platform'   => '',
 				'source'     => 'import',
-				'list'       => '',
-				'status'     => 'subscribed',
-				'date_created' => current_time('mysql'),
-				'date_updated' => $data['date_created'] ?? current_time('mysql'),
+				'lists'      => !empty($defaults['lists']) ? $defaults['lists'] : [],
+				'status'     => $defaults['status'] ?? 'subscribed',
+				'created_at' => current_time('mysql'),
+				'updated_at' => $data['created_at'] ?? current_time('mysql'),
 				'timezone'   => '',
 				'tags'       => [],
 			]);
@@ -138,7 +140,7 @@ class Bloom_Bridge
 				$wpdb->prepare("SELECT id FROM {$table} WHERE email = %s LIMIT 1", $data['email'])
 			);
 
-			$saved = Database::save($data);
+			$saved = Subscribers::save($data);
 
 			if ($saved === false) {
 				$result['skipped']++;
@@ -160,6 +162,23 @@ class Bloom_Bridge
 		return $result;
 	}
 
+	private static function str_to_array($value): array
+	{
+		if (empty($value)) {
+			return [];
+		}
+
+		if (is_array($value)) {
+			return array_values(array_filter(array_map('trim', $value)));
+		}
+
+		return array_values(
+			array_filter(
+				array_map('trim', explode(',', $value))
+			)
+		);
+	}
+
 	private static function normalize_date(string $value): ?string
 	{
 		if (empty(trim($value))) {
@@ -177,22 +196,23 @@ class Bloom_Bridge
 
 		return gmdate('Y-m-d H:i:s', $ts);
 	}
+
 	/**
 	 * Get all active subscribers.
-	 * @param array $args Optional filters (e.g. list, tags)
+	 * @param array $args Optional filters (e.g. lists, tags)
 	 * @return array Array of objects with id, email, name properties.
 	 */
 	public static function get_active_subscribers(array $args = []): array
 	{
 		$defaults = [
-			'status' => 'active',   // enforce active status
-			'list'   => '',
+			'status' => self::STATUS_ACTIVE,
+			'lists'   => null,
 			'search' => '',
 			'tags'   => null,
 		];
 		$args = wp_parse_args($args, $defaults);
 
-		$result = Database::query($args);
+		$result = Subscribers::query($args);
 
 		// Optional: limit returned columns to match original method
 		return array_map(function ($item) {
@@ -215,24 +235,17 @@ class Bloom_Bridge
 	 */
 	public static function get_subscriber(int $id)
 	{
-		global $wpdb;
+		return Subscribers::get($id);
+	}
 
-		$table = $wpdb->prefix . self::TABLE;
+	public static function get_lists($args = [])
+	{
+		return Lists::get_all($args);
+	}
 
-		return $wpdb->get_row(
-			$wpdb->prepare(
-				"SELECT
-				id,
-				email,
-				first_name,
-				last_name,
-				timezone,
-				utc_offset
-				FROM {$table}
-				WHERE " . self::COL_ID . " = %d",
-				$id
-			)
-		);
+	public static function get_tags($args = [])
+	{
+		return Tags::get_all($args);
 	}
 
 	/**
@@ -305,6 +318,53 @@ class Bloom_Bridge
 		));
 
 		return array_map('intval', $results ?? []);
+	}
+
+	/**
+	 * Resolve a set of { list, tag } rows into a flat unique array of subscriber IDs.
+	 * Each row is OR-ed (union), matching FluentCRM's "Add More" behaviour.
+	 *
+	 * @param array $rows  e.g. [['list' => 'Newsletter', 'tag' => null], ...]
+	 * @return int[]
+	 */
+	public static function resolve_recipient_ids(array $rows): array
+	{
+		$subscriber_ids = [];
+
+		foreach ($rows as $row) {
+			$list_id = !empty($row['list']) ? (int) $row['list'] : null;
+			$tag_id  = !empty($row['tag']) ? (int) $row['tag'] : null;
+
+			$ids = [];
+
+			if ($list_id) {
+				$ids = Lists::get_subscriber_ids($list_id);
+			}
+
+			if ($tag_id) {
+				$tag_ids = Tags::get_subscriber_ids($tag_id);
+
+				if ($list_id) {
+					// list AND tag
+					$ids = array_intersect($ids, $tag_ids);
+				} else {
+					// tag only
+					$ids = $tag_ids;
+				}
+			}
+
+			// OR with previous rows
+			$subscriber_ids = array_merge($subscriber_ids, $ids);
+		}
+
+		$subscriber_ids = array_unique(array_map('intval', $subscriber_ids));
+
+		// Keep only active subscribers
+		$active_ids = self::get_active_subscriber_ids();
+
+		return array_values(
+			array_intersect($subscriber_ids, $active_ids)
+		);
 	}
 
 	/**

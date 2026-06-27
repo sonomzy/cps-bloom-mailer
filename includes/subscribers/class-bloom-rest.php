@@ -26,13 +26,23 @@ class Bloom_Rest
 
     public function register_routes()
     {
-        register_rest_route('cps/v1', '/bloom/subscribers/import', [
-            'methods'  => 'POST',
-            'callback' => [$this, 'import_subscribers'],
-            'permission_callback' => function () {
-                return current_user_can('manage_options');
-            },
-        ]);
+        $routes = [
+            'subscribers/import' => ['POST', 'import_subscribers'],
+            'subscribers/segments' => ['POST', 'create_segment'],
+        ];
+
+        foreach ($routes as $route => $info) {
+            $method = $info[0];
+            $callback = $info[1];
+
+            register_rest_route('cps/v1', '/bloom/' . $route, [
+                'methods'  => $method,
+                'callback' => [$this, $callback],
+                'permission_callback' => function () {
+                    return current_user_can('manage_options');
+                },
+            ]);
+        }
     }
 
     // -------------------------------------------------------------------------
@@ -72,6 +82,13 @@ class Bloom_Rest
         $map = json_decode($map_raw, true);
         if (!is_array($map)) {
             return new WP_Error('import_error', 'Invalid field map.', ['status' => 400]);
+        }
+
+        // Decode the field map
+        $defaults_raw = $request->get_param('defaults');
+        $defaults = json_decode($defaults_raw, true);
+        if (!empty($defaults) && !is_array($defaults)) {
+            return new WP_Error('import_error', 'Invalid defaults data.', ['status' => 400]);
         }
 
         // Email column must be mapped
@@ -116,9 +133,14 @@ class Bloom_Rest
             return new WP_Error('import_error', 'No data rows found in the CSV.', ['status' => 400]);
         }
 
-        $result = Bloom_Bridge::import_csv($rows, $map);
+        $result = Bloom_Bridge::import_csv($rows, $map, $defaults);
 
         return rest_ensure_response($result);
+    }
+
+    public static function create_segment($request)
+    {
+        return Segments::create($request);
     }
 }
 new Bloom_Rest();

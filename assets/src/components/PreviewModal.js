@@ -72,7 +72,7 @@ const PreviewModal = ({ subject, header, blocks, footer, design, close }) => {
             headerActions={previewButtons}
         >
             {loading ? (
-                <Spinner>Loading preview...</Spinner>
+                <Spinner>{__('Loading preview...')}</Spinner>
             ) : (
                 <div
                     style={{
@@ -80,20 +80,14 @@ const PreviewModal = ({ subject, header, blocks, footer, design, close }) => {
                             previewDevice === 'tablet' ? '768px' : '100%',
                         margin: '0 auto',
                         height: '100%',
-                        overflow: 'auto',
+                        overflow: 'hidden',
                         transition: 'all 0.3s ease'
                     }}
                 >
                     <iframe
                         srcDoc={previewHtml}
                         className="preview-iframe"
-                        style={{ pointerEvents: 'none' }}
                         title="Email Preview"
-                        onLoad={(e) => {
-                            // resize iframe to its content height so the wrapper div scrolls
-                            const doc = e.target.contentDocument;
-                            e.target.style.height = doc.documentElement.scrollHeight + 'px';
-                        }}
                         sandbox="allow-same-origin"
                     />
                 </div>

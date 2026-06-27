@@ -92,25 +92,25 @@ class Helpers
     private static function font_families()
     {
         return [
-            'system-ui'  => '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif',
-            'system'     => '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif',
+            'system-ui'  => "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif",
+            'system'     => "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif",
             'arial'      => 'Arial, Helvetica, sans-serif',
-            'helvetica'  => '"Helvetica Neue", Helvetica, Arial, sans-serif',
-            'times'      => '"Times New Roman", Times, serif',
-            'times-new-roman' => '"Times New Roman", Times, serif',
+            'helvetica'  => "'Helvetica Neue', Helvetica, Arial, sans-serif",
+            'times'      => "'Times New Roman', Times, serif",
+            'times-new-roman' => "'Times New Roman', Times, serif",
             'georgia'    => 'Georgia, serif',
-            'courier'    => '"Courier New", Courier, monospace',
-            'courier-new' => '"Courier New", Courier, monospace',
+            'courier'    => "'Courier New', Courier, monospace",
+            'courier-new' => "'Courier New', Courier, monospace",
             'verdana'    => 'Verdana, Geneva, sans-serif',
             'tahoma'     => 'Tahoma, Geneva, sans-serif',
-            'trebuchet'  => '"Trebuchet MS", Helvetica, sans-serif',
-            'trebuchet-ms' => '"Trebuchet MS", Helvetica, sans-serif',
-            'palatino'   => '"Palatino Linotype", "Book Antiqua", Palatino, serif',
+            'trebuchet'  => "'Trebuchet MS', Helvetica, sans-serif",
+            'trebuchet-ms' => "'Trebuchet MS', Helvetica, sans-serif",
+            'palatino'   => "'Palatino Linotype', 'Book Antiqua', Palatino, serif",
             'garamond'   => 'Garamond, serif',
             'impact'     => 'Impact, Charcoal, sans-serif',
-            'comic-sans' => '"Comic Sans MS", cursive, sans-serif',
-            'comic-sans-ms' => '"Comic Sans MS", cursive, sans-serif',
-            'monospace'  => 'Monaco, "Lucida Console", Courier, monospace',
+            'comic-sans' => "'Comic Sans MS', cursive, sans-serif",
+            'comic-sans-ms' => "'Comic Sans MS', cursive, sans-serif",
+            'monospace'  => "Monaco, 'Lucida Console', Courier, monospace",
         ];
     }
 
@@ -242,6 +242,28 @@ class Helpers
         );
         return apply_filters('cps_mailer_placeholders', $data);
     }
+
+    /**
+     * Returns default spacing for a given section type.
+     *
+     * @param string $type  block | header | footer | button | space
+     * @return array{ top: int, right: int, bottom: int, left: int}
+     */
+    public static function default_spacing(string $type = 'block'): array
+    {
+        $map = [
+            'separator' => ['top' => '10px', 'bottom' => '10px'],
+            'block' => ['top' => '15px', 'right' => '10px', 'bottom' => '15px', 'left' => '10px'],
+            'blockMargin' => ['bottom' => '20px'],
+            'button' => ['top' => '12px', 'right' => '30px', 'bottom' => '12px', 'left' => '30px'],
+            'space' => ['top' => '30px', 'bottom' => '30px'],
+            'content' => ['top' => '30px', 'right' => '30px', 'bottom' => '30px', 'left' => '30px'],
+            'header' => ['top' => '20px', 'right' => '40px', 'bottom' => '30px', 'left' => '40px'],
+            'footer' => ['top' => '20px', 'right' => '40px', 'bottom' => '20px', 'left' => '40px'],
+        ];
+        return $map[$type] ?? $map['block'];
+    }
+
 
     /**
      * Replace merge tags with actual values

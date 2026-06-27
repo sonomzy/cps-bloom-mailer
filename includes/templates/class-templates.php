@@ -217,7 +217,7 @@ class Templates
             'bodyBg'          => '#f5f5f5',
             'containerWidth'  => 600,
             'containerBg'     => '#ffffff',
-            'padding'         => ['top' => '30px', 'left' => '30px', 'right' => '30px', 'bottom' => '30px'],
+            'padding'         => Helpers::default_spacing('content'),
             'borderRadius'    => 8,
             'fontFamily'      => 'Arial, sans-serif',
             'fontSize'        => 16,
@@ -242,7 +242,7 @@ class Templates
                 'titleSize'       => '28px',
                 'fontSize'        => '14px',
                 'showDescription' => false,
-                'padding'         => ['top' => '20px', 'left' => '40px', 'right' => '40px', 'bottom' => '30px'],
+                'padding'         => Helpers::default_spacing('header'),
             ),
         );
     }
@@ -262,7 +262,7 @@ class Templates
                 'fontSize'  => '12px',
                 'background'   => '',
                 'linkColor' => '0073aa',
-                'padding'   => ['top' => '20px', 'left' => '40px', 'right' => '40px', 'bottom' => '20px'],
+                'padding'   => Helpers::default_spacing('footer'),
             ),
         );
     }

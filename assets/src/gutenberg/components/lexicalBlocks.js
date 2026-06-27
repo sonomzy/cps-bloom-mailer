@@ -8,7 +8,6 @@ export const Header = ({ header, design, setHeaderContent, selectedSection, onCl
             data-type='header'
             style={{
                 borderColor: (selectedSection === 'header' ? '#999' : ''),
-                fontFamily: design?.fontFamily,
                 textAlign: header?.settings?.alignment || 'center',
                 fontSize: header?.settings?.fontSize,
                 color: header?.settings?.textColor,
@@ -44,6 +43,7 @@ export const Header = ({ header, design, setHeaderContent, selectedSection, onCl
                                     initialHTML={header?.description?.html}
                                     savedState={header?.description?.json}
                                     selected={`${selectedSection}-desc`}
+                                    style={{ border: '1px dashed' }}
                                     placeholder={__('Enter description...', 'cps-bloom-mailer')}
                                     onChange={({ html, json }) => setHeaderContent({ ...header, description: { html, json } })}
                                 />
@@ -69,7 +69,7 @@ export const Footer = ({ footer, design, setFooterContent, selectedSection, onCl
                 color: footer?.settings?.textColor,
                 backgroundColor: footer?.settings?.background,
                 padding: boxValues(footer?.settings?.padding || defaultSpacing('footer')),
-               ' --footer--link--color':footer?.settings?.linkColor,
+                '--footer--link--color': footer?.settings?.linkColor,
             }}
             onClick={onClick}
         >

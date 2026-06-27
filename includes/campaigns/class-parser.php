@@ -69,7 +69,7 @@ class Parser
         $s          = $header['settings'] ?? [];
         $alignment  = $s['alignment'] ?? 'center';
         $font       = $s['fontFamily'] ?? 'sans-serif';
-        $style    = self::spacing_style(['spacing' => $s['padding'] ?? self::default_spacing('header')]);
+        $style    = self::spacing_style(['spacing' => $s['padding'] ?? Helpers::default_spacing('header')]);
         $style   .= self::color_style($s);
         $logo_url   = $header['logoUrl']   ?? '';
         $logo_width = $header['logoWidth'] ?? 60;
@@ -81,14 +81,14 @@ class Parser
         } else {
             $title      = $header['title']['html'] ?? '{{site_name}}';
             $title_size = $s['titleSize'] ?? '28px';
-            $inner      = "<h1 style=\"margin:0;font-size:{$title_size};font-family:{$font};\">{$title}</h1>";
+            $inner      = "<h1 style=\"font-size:{$title_size};font-family:{$font};\">{$title}</h1>";
         }
 
         $desc_html = '';
         if (! empty($s['showDescription'])) {
             $font_size   = $s['fontSize']   ?? '14px';
             $description = $header['description']['html'] ?? '';
-            $desc_html   = "<p style=\"margin:10px 0 0;font-size:{$font_size};font-family:{$font};\">{$description}</p>";
+            $desc_html   = "<p style=\"padding-top:10px;font-size:{$font_size};font-family:{$font};\">{$description}</p>";
         }
 
         return "<tr>
@@ -109,7 +109,7 @@ class Parser
         $alignment  = $s['alignment'] ?? 'center';
         $font_size  = $s['fontSize']  ?? '12';
         $linkColor = self::resolve_preset_color($s['linkColor'] ?? '');
-        $style    = self::spacing_style(['spacing' => $s['padding'] ?? self::default_spacing('footer')]);
+        $style    = self::spacing_style(['spacing' => $s['padding'] ?? Helpers::default_spacing('footer')]);
         $style   .= self::color_style($s);
         $content = $footer['content']['html'] ?? '';
         // $content = self::strip_link_colors($footer['content']['html'] ?? '');
@@ -196,8 +196,11 @@ class Parser
             $innerHTML
         );
 
-
         $tdStyle = self::border_style($attrs);
+        if (strpos($attrs['className'], 'is-style-rounded') !== false && empty($attrs['style']['border']['radius'])) {
+            $tdStyle .= 'border-radius:9999px;';
+        }
+
         $inlinStyle = !empty($style) ? " style=\"$style\"" : '';
         $captionHtml = $caption ? "<tr>
             <td style=\"text-align:center;font-size:13px;color:#666666;padding:4px 10px 0;\">
@@ -318,7 +321,7 @@ class Parser
         $margin = self::spacing_style($attrs, ['prop' => 'margin', 'type' => 'blockMargin']);
         return "<tr>
             <td style=\"$margin\">
-                <{$tag} style=\"margin:0;list-style:inside{$type};{$style}\">{$listItems}</{$tag}>
+                <{$tag} style=\"list-style:inside{$type};{$style}\">{$listItems}</{$tag}>
             </td>
         </tr>";
     }
@@ -354,7 +357,7 @@ class Parser
                         $nestedItems .= self::list_item($nestedItem);
                     }
                     $tag = !empty($nested['attrs']['ordered']) ? 'ol' : 'ul';
-                    $content = preg_replace('/<\/li>$/', "<{$tag} style=\"margin:0;padding-left:20px;\">{$nestedItems}</{$tag}></li>", $content);
+                    $content = preg_replace('/<\/li>$/', "<{$tag} style=\"padding-left:20px;\">{$nestedItems}</{$tag}></li>", $content);
                 }
             }
         }
@@ -547,25 +550,28 @@ class Parser
 
         $separator = '';
         if (strpos($class, 'is-style-dots') !== false) {
-            $separator = "<div style=\"text-align:center; line-height:24px; font-size:24px; color:{$color}; mso-line-height-rule:exactly;\">&middot;&nbsp;&nbsp;&middot;&nbsp;&nbsp;&middot;</div>";
+            $separator = "<div style=\"text-align:center; line-height:24px; font-size:24px; color:{$color}; mso-line-height-rule:exactly;\">&middot;&nbsp;&nbsp;&nbsp;&middot;&nbsp;&nbsp;&nbsp;&middot;</div>";
         } else {
             $hasWideAlignmentClass = strpos($class, 'alignwide') !== false || strpos($class, 'alignfull') !== false;
             $isWide = strpos($class, 'is-style-wide') !== false || $hasWideAlignmentClass || in_array($attrs['align'] ?? '', ['wide', 'full'], true);
 
             if ($isWide) {
-                $separator = "<table border=\"0\" cellpadding=\"0\" cellspacing=\"0\" width=\"100%\" style=\"width:100%;\">\n" .
-                    "  <tr><td height=\"2\" background=\"{$color}\" style=\"font-size:2px; line-height:2px; height:2px; background-color:{$color};\">&nbsp;</td></tr>\n" .
-                    "</table>";
+                $separator = "<tr><td background=\"{$color}\" style=\"font-size:2px; line-height:2px; height:2px; background-color:{$color};\">&nbsp;</td></tr>";
             } else {
-                $separator = "<table align=\"center\" border=\"0\" cellpadding=\"0\" cellspacing=\"0\" width=\"100\" style=\"width:100px; margin:0 auto;\">\n" .
-                    "  <tr><td height=\"2\" background=\"{$color}\" style=\"font-size:2px; line-height:2px; height:2px; background-color:{$color};\">&nbsp;</td></tr>\n" .
-                    "</table>";
+                $separator = "
+                    <tr>
+                        <td style=\"font-size:2px;line-height:2px;height:2px;width:40%;\">&nbsp;</td>
+                        <td style=\"font-size:2px;line-height:2px;height:2px;width:20%;max-width:100px;background-color:{$color};\">&nbsp;</td>
+                        <td style=\"font-size:2px;line-height:2px;height:2px;width:40%;\">&nbsp;</td>
+                    </tr>";
             }
         }
 
         return "<tr>
             <td align=\"center\" style=\"width:100%; text-align:center; {$space}\">
+            <table border=\"0\" cellpadding=\"0\" cellspacing=\"0\" width=\"100%\" style=\"width:100%;\">
                 {$separator}
+            </table>
             </td>
         </tr>";
     }
@@ -745,7 +751,7 @@ class Parser
 
         return "<tr>
             <td style=\"{$style}letter-spacing:1px;text-transform:uppercase;line-height:1;\">
-                <ul style=\"margin:0;list-style:none;font-size:{$fontSize}px;{$ulStyle}\">
+                <ul style=\"list-style:none;font-size:{$fontSize}px;{$ulStyle}\">
                     {$icons}
                 </ul>
             </td>
@@ -928,7 +934,7 @@ class Parser
         $btnColor     = $attrs['buttonColor'] ?? '#ffffff';
         $btnTextColor   = $attrs['buttonTextColor'] ?? '#333333';
 
-        $style    = self::spacing_style(['spacing' => $attrs['padding'] ?? self::default_spacing('block')]);
+        $style    = self::spacing_style(['spacing' => $attrs['padding'] ?? Helpers::default_spacing('block')]);
         $style   .= self::color_style($attrs);
 
         $args = [
@@ -974,12 +980,12 @@ class Parser
                 $inner .= '</a>';
             }
 
-            $inner .= '<h3 style="margin:0 0 8px;font-size:15px;line-height:1.4;">';
+            $inner .= '<h3 style="padding-bottom:8px;font-size:15px;line-height:1.4;">';
             $inner .= '<a href="' . esc_url($permalink) . '" style="color:inherit;text-decoration:none;">' . esc_html($title) . '</a>';
             $inner .= '</h3>';
 
             if ($show_excerpt && $excerpt) {
-                $inner .= '<p style="margin:0 0 10px;font-size:14px;line-height:1.6;">' . esc_html($excerpt) . '</p>';
+                $inner .= '<p style="padding-bottom:10px;font-size:14px;line-height:1.6;">' . esc_html($excerpt) . '</p>';
             }
 
             if ($show_button) {
@@ -1009,7 +1015,7 @@ class Parser
         $button_text  = $attrs['buttonText'] ?? 'Shop Now';
         $btnColor     = $attrs['buttonColor'] ?? '#ffffff';
         $btnTextColor   = $attrs['buttonTextColor'] ?? '#333333';
-        $style    = self::spacing_style(['spacing' => $attrs['padding'] ?? self::default_spacing('block')]);
+        $style    = self::spacing_style(['spacing' => $attrs['padding'] ?? Helpers::default_spacing('block')]);
         $style   .= self::color_style($attrs);
 
         $args = [
@@ -1075,7 +1081,7 @@ class Parser
                 $inner .= '</a>';
             }
 
-            $inner .= '<h3 style="margin:0 0 4px;font-weight:600;font-size:15px;">';
+            $inner .= '<h3 style="padding-bottom:4px;font-weight:600;font-size:15px;">';
             $inner .= '<a href="' . esc_url($permalink) . '" style="color:inherit;text-decoration:none;">' . esc_html($title) . '</a>';
             $inner .= '</h3>';
 
@@ -1089,13 +1095,13 @@ class Parser
             }
 
             if ($price_html) {
-                $inner .= '<p style="margin:0 0 10px;font-size:14px;">' . $price_html . '</p>';
+                $inner .= '<p style="padding-bottom:10px;font-size:14px;">' . $price_html . '</p>';
             }
 
             $rating       = (float) $product->get_average_rating();
             $review_count = (int) $product->get_review_count();
             if ($rating > 0) {
-                $inner .= '<p style="margin:0 0 6px;font-size:13px;color:#f5a623;letter-spacing:2px;">';
+                $inner .= '<p style="padding-bottom:6px;font-size:13px;color:#f5a623;letter-spacing:2px;">';
                 $inner .= '<span>' . esc_html(self::render_stars($rating)) . '</span>';
                 if ($review_count > 0) {
                     $inner .= '<span style="font-size:12px;letter-spacing:0;margin-left:4px;opacity:0.7;">(' . $review_count . ')</span>';
@@ -1381,10 +1387,14 @@ class Parser
             $spacing = $attrs['style']['spacing'][$args['prop']] ?? [];
         } else if (isset($attrs['spacing'])) {
             $spacing = $attrs['spacing'] ?? [];
-        } else if (empty($spacing) && !empty($args['type'])) {
-            $spacing = self::default_spacing($args['type'] ?? 'block');
-        } else {
-            return '';
+        }
+
+        if (empty($spacing)) {
+            if (!empty($args['type'])) {
+                $spacing = Helpers::default_spacing($args['type'] ?? 'block');
+            } else {
+                return '';
+            }
         }
 
         $css = '';
@@ -1725,28 +1735,6 @@ class Parser
         return $matches[1] ?? wp_strip_all_tags($html);
     }
 
-
-    /**
-     * Returns default spacing for a given section type.
-     *
-     * @param string $type  block | header | footer | button | space
-     * @return array{ top: int, right: int, bottom: int, left: int}
-     */
-    private static function default_spacing(string $type = 'block'): array
-    {
-        $map = [
-            'separator' => ['top' => '10px', 'bottom' => '10px'],
-            'block' => ['top' => '15px', 'right' => '10px', 'bottom' => '15px', 'left' => '10px'],
-            'blockMargin' => ['bottom' => '20px'],
-            'button' => ['top' => '12px', 'right' => '30px', 'bottom' => '12px', 'left' => '30px'],
-            'space' => ['top' => '30px', 'bottom' => '30px'],
-            'content' => ['top' => '30px', 'right' => '30px', 'bottom' => '30px', 'left' => '30px'],
-            'header' => ['top' => '20px', 'right' => '40px', 'bottom' => '30px', 'left' => '40px'],
-            'footer' => ['top' => '20px', 'right' => '40px', 'bottom' => '20px', 'left' => '40px'],
-        ];
-        return $map[$type] ?? $map['block'];
-    }
-
     /**
      * Returns a star string for a numeric rating (0–5).
      *
@@ -1861,9 +1849,10 @@ class Parser
      * @param string   $block_markup gutenberg string.
      * @param array   $footer   Decoded footer data.
      * @param array   $design   Decoded design settings.
+     * @param bool    $preview
      * @return string
      */
-    public static function generate($subject, $header, $block_markup, $footer, $design)
+    public static function generate($subject, $header, $block_markup, $footer, $design, $preview = false)
     {
         $blocks = self::parse($block_markup);
         $header_html    = self::header($header, $design);
@@ -1873,16 +1862,17 @@ class Parser
         $border_radius  = (int) ($design['borderRadius']  ?? 8);
         $body_bg        = self::resolve_color($design['bodyBg']     ?? '#f4f4f4');
         $container_bg   = self::resolve_color($design['containerBg'] ?? '#ffffff');
+        $padding        = self::spacing_style(['spacing' => $design['padding'] ?? Helpers::default_spacing('content')]);
+        $pointerEvents = $preview === true ? 'pointer-events: none;' : '';
         $styles = [
             'style' => [
                 'typography' => [
                     'lineHeight' => $design['lineHeight'] ?? 1.6,
-                    'fontFamily' => 'system',
+                    'fontFamily' => $design['fontFamily'] ?? 'system',
                     'fontSize' => $design['fontSize'] ?? 14
                 ]
             ],
-            'textColor' => $design['textColor']  ?? '#333333',
-            'spacing' => $design['padding'] ?? self::default_spacing('content')
+            'textColor' => $design['textColor']  ?? '#333333'
         ];
         $style = self::resolveStyles($styles);
 
@@ -1901,19 +1891,20 @@ class Parser
     <![endif]-->
 	<style id="cps-styles-inline-css">
         .econtainer a{color:inherit;text-decoration: underline;}
+        .econtainer *{margin:0 !important;}
         ul,ol{margin: 0 0 0.5em 1.5em;padding: 0;list-style-type: disc;}
         img.wp-smiley, img.emoji { display: inline !important;border: none !important;box-shadow: none !important; height: 1em !important;width: 1em !important;margin: 0 0.07em !important;vertical-align: -0.1em !important;background: none !important;padding: 0 !important;}
         /* Mobile stacking for columns */
         @media only screen and (max-width: 600px) {
-            .email-column { display: block !important; width: 100% !important; }
+            .email-column { display: block !important; width: auto !important; }
         }
     </style>
 </head>
-<body style="margin: 20px; padding:0; background-color: {$body_bg};">
-    <table class="econtainer" style="width: 100%; border: 0; border-collapse: separate; background: {$container_bg}; max-width: {$container_w}px; border-radius: {$border_radius}px; margin:auto;overflow:hidden;">
+<body style="{$pointerEvents}padding: 20px; padding:0;word-break: break-word;background-color:{$body_bg};{$style}">
+    <table class="econtainer" style="width: 100%; border: 0; border-collapse: collapse; background: {$container_bg}; max-width: {$container_w}px; border-radius: {$border_radius}px; margin:auto;overflow:hidden;">
        {$header_html}
         <tr>
-            <td class="einner" style="{$style};">
+            <td class="einner" style="{$padding}">
                 <table style="width: 100%; border: 0; border-collapse: collapse;">
                     {$blocks_html}
                 </table>

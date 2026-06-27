@@ -1,7 +1,7 @@
 <?php
 
 namespace ChicpixiesBloomMailer;
-
+use WP_Error;
 if (! defined('ABSPATH')) {
     exit;
 }
@@ -23,7 +23,7 @@ class Mailer_SES extends Mailer_Base
         $this->endpoint = "https://email.{$this->region}.amazonaws.com/v2/email/outbound-emails";
     }
 
-    public function send(array $args): bool
+    public function send(array $args): mixed
     {
         $to         = $args['to'] ?? '';
         $subject    = $args['subject'] ?? '';
@@ -38,7 +38,7 @@ class Mailer_SES extends Mailer_Base
 
         if (! $this->key || ! $this->secret) {
             error_log('CPS Mailer SES: Missing API credentials.');
-            return false;
+            return new WP_Error('ses_error', __('Missing API credentials.', 'cps-bloom-mailer'), ['status' => 400]);
         }
 
         $from    = $from_name ? "{$from_name} <{$from_email}>" : $from_email;
@@ -65,7 +65,7 @@ class Mailer_SES extends Mailer_Base
             'EmailTags' => [
                 [
                     'Name'  => 'cps_campaign_id',
-                    'Value' => $args['campaign_id']??'unset'
+                    'Value' => $args['campaign_id'] ?? 'unset'
                 ],
             ]
         ]);
@@ -81,14 +81,14 @@ class Mailer_SES extends Mailer_Base
 
         if (is_wp_error($response)) {
             error_log('CPS Mailer SES error: ' . $response->get_error_message());
-            return false;
+            return $response;
         }
 
         $code = wp_remote_retrieve_response_code($response);
 
         if ($code !== 200) {
             error_log('CPS Mailer SES error: HTTP ' . $code . ' - ' . wp_remote_retrieve_body($response));
-            return false;
+            return new \WP_Error('ses_error', wp_remote_retrieve_body($response), ['status' => $code]);
         }
 
         return true;

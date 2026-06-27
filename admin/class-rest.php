@@ -363,6 +363,10 @@ class Rest
             'reply_to' => ''
         ));
 
+        if (is_wp_error($sent)) {
+            return $sent;
+        }
+
         if (!$sent) {
             return new WP_Error(
                 'mail_failed',
@@ -387,7 +391,8 @@ class Rest
             $campaign['header'] ?? [],
             $campaign['blocks'] ?? '',
             $campaign['footer'] ?? [],
-            $campaign['design'] ?? []
+            $campaign['design'] ?? [],
+            true
         );
 
         if (empty($html)) {
@@ -402,75 +407,19 @@ class Rest
 
     /**
      * GET /cps/v1/mailer/lists
-     * Returns distinct list values from the bloom subscribers table.
      */
     public function get_lists($request)
     {
-        global $wpdb;
-
-        $table = $wpdb->prefix . Bloom_Bridge::TABLE;
-        $col   = Bloom_Bridge::COL_LIST;
-
-        $rows = $wpdb->get_col(
-            "SELECT DISTINCT {$col} AS list_value
-             FROM {$table}
-             WHERE {$col} IS NOT NULL
-               AND {$col} != ''
-             ORDER BY {$col} ASC"
-        );
-
-        $lists = array_values(
-            array_map(fn($row) => [
-                'id'    => $row->list_value,
-                'title' => $row->list_value,
-            ], $rows ?: [])
-        );
-
+        $lists =  Bloom_Bridge::get_lists();
         return rest_ensure_response($lists);
     }
 
     /**
      * GET /cps/v1/mailer/tags
-     * Extracts and flattens all unique tag values from the JSON tags column.
      */
     public function get_tags($request)
     {
-        global $wpdb;
-
-        $table      = $wpdb->prefix . Bloom_Bridge::TABLE;
-        $col        = Bloom_Bridge::COL_TAGS;
-
-        $rows = $wpdb->get_col(
-            "SELECT DISTINCT {$col}
-             FROM {$table}
-             WHERE {$col} IS NOT NULL
-               AND {$col} != ''
-               AND {$col} != '[]'"
-
-        );
-
-        // Flatten JSON arrays from every subscriber row into one unique set
-        $all_tags = [];
-        foreach ($rows as $raw) {
-            $decoded = json_decode($raw, true);
-            if (is_array($decoded)) {
-                foreach ($decoded as $tag) {
-                    $tag = trim((string) $tag);
-                    if ($tag !== '') {
-                        $all_tags[$tag] = true;
-                    }
-                }
-            } else {
-                // fallback: comma-separated plain text
-                foreach (explode(',', $raw) as $tag) {
-                    $all_tags[] = trim($tag);
-                }
-            }
-        }
-
-        $tags = array_values(array_unique(array_filter($all_tags)));
-        sort($tags);
-
+        $tags = Bloom_Bridge::get_tags();
         return rest_ensure_response($tags);
     }
 
@@ -495,10 +444,10 @@ class Rest
         $included = array_filter($included, fn($r) => !empty($r['list']) || !empty($r['tag']));
         $excluded = array_filter($excluded, fn($r) => !empty($r['list']) || !empty($r['tag']));
 
-        $included_ids = self::resolve_recipient_ids(array_values($included));
+        $included_ids = Bloom_Bridge::resolve_recipient_ids(array_values($included));
 
         if (!empty($excluded)) {
-            $excluded_ids = self::resolve_recipient_ids(array_values($excluded));
+            $excluded_ids = Bloom_Bridge::resolve_recipient_ids(array_values($excluded));
             $included_ids = array_values(array_diff($included_ids, $excluded_ids));
         }
 
@@ -525,7 +474,7 @@ class Rest
         $included = array_filter($recipients['included'] ?? [], fn($r) => !empty($r['list']) || !empty($r['tag']));
         $excluded = array_filter($recipients['excluded'] ?? [], fn($r) => !empty($r['list']) || !empty($r['tag']));
 
-        $subscriber_ids = self::resolve_recipient_ids(array_values($included));
+        $subscriber_ids = Bloom_Bridge::resolve_recipient_ids(array_values($included));
 
         // Nothing explicitly selected → send to all active subscribers
         if (empty($included)) {
@@ -534,7 +483,7 @@ class Rest
         }
 
         if (!empty($excluded)) {
-            $excluded_ids   = self::resolve_recipient_ids(array_values($excluded));
+            $excluded_ids   = Bloom_Bridge::resolve_recipient_ids(array_values($excluded));
             $subscriber_ids = array_values(array_diff($subscriber_ids, $excluded_ids));
         }
 
@@ -868,60 +817,6 @@ class Rest
         Suppression::remove($email);
 
         return rest_ensure_response(['removed' => true, 'email' => $email]);
-    }
-
-    /**
-     * Resolve a set of { list, tag } rows into a flat unique array of subscriber IDs.
-     * Each row is OR-ed (union), matching FluentCRM's "Add More" behaviour.
-     *
-     * @param array $rows  e.g. [['list' => 'Newsletter', 'tag' => null], ...]
-     * @return int[]
-     */
-    public static function resolve_recipient_ids(array $rows): array
-    {
-        global $wpdb;
-
-        $table      = $wpdb->prefix . Bloom_Bridge::TABLE;
-        $id_col     = Bloom_Bridge::COL_ID;
-        $status_col = Bloom_Bridge::COL_STATUS;
-        $list_col   = Bloom_Bridge::COL_LIST;
-        $tags_col   = Bloom_Bridge::COL_TAGS;
-
-        $union_parts  = [];
-        $union_values = [];
-
-        foreach ($rows as $row) {
-            $list = !empty($row['list']) ? trim($row['list']) : null;
-            $tag  = !empty($row['tag'])  ? trim($row['tag'])  : null;
-
-            $where_parts  = ["{$status_col} = %s"];
-            $where_values = [Bloom_Bridge::STATUS_ACTIVE];
-
-            if ($list !== null) {
-                $where_parts[]  = "{$list_col} = %s";
-                $where_values[] = $list;
-            }
-
-            if ($tag !== null) {
-                $where_parts[]  = "JSON_CONTAINS({$tags_col}, %s)";
-                $where_values[] = json_encode($tag);
-            }
-
-            $union_parts[]  = 'SELECT ' . $id_col . ' FROM ' . $table . ' WHERE ' . implode(' AND ', $where_parts);
-            $union_values   = array_merge($union_values, $where_values);
-        }
-
-        if (empty($union_parts)) {
-            return [];
-        }
-
-        // UNION (not UNION ALL) deduplicates across rows automatically in SQL
-        $sql = implode(' UNION ', $union_parts);
-
-        // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared
-        return array_map('intval', $wpdb->get_col(
-            $wpdb->prepare($sql, ...$union_values)
-        ));
     }
 }
 new Rest();

@@ -1,0 +1,483 @@
+// ---------------------------------------------------------------------------
+// cps-bloom subscribers page
+// Mirrors cps-mailer campaign table style
+// ---------------------------------------------------------------------------
+
+$color-text: #1e1e1e;
+$color-subtle: #757575;
+$color-border: #e0e0e0;
+$color-bg: #ffffff;
+$color-bg-hover: #f6f7f7;
+$color-primary: #3858e9;
+$color-success: #00a32a;
+$color-warning: #dba617;
+$color-error: #d63638;
+$color-info: #007cba;
+$radius: 4px;
+$radius-lg: 8px;
+
+// ---------------------------------------------------------------------------
+// Toolbar
+// ---------------------------------------------------------------------------
+
+.cps-bloom-page__toolbar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    margin-bottom: 16px;
+    flex-wrap: wrap;
+
+    &-left,
+    &-right,
+    &-date-filters {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        flex-wrap: wrap;
+    }
+
+    &-date-filters {
+        flex-wrap: nowrap;
+    }
+
+    &-count {
+        font-size: 12px;
+        color: $color-subtle;
+    }
+
+    .components-select-control__input,
+    .components-text-control__input {
+        height: 32px;
+        font-size: 13px;
+    }
+}
+
+.cps-bloom-card {
+    &__name {
+        display: block;
+        font-size: 12px;
+        color: $color-subtle;
+        margin-top: 2px;
+    }
+
+    &__meta {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 6px;
+        margin-bottom: 8px;
+    }
+
+    &__meta-item {
+        font-size: 12px;
+        color: $color-subtle;
+
+        &::after {
+            content: '·';
+            margin-left: 6px;
+        }
+
+        &:last-child::after {
+            content: '';
+        }
+    }
+}
+
+.blm-date-input {
+    height: 32px;
+    padding: 0 8px;
+    border: 1px solid #757575;
+    border-radius: $radius;
+    font-size: 13px;
+    font-family: inherit;
+    color: $color-text;
+    background: $color-bg;
+    width: 140px;
+
+    &:focus {
+        outline: 2px solid $color-primary;
+        outline-offset: 0;
+        border-color: transparent;
+    }
+}
+
+// ---------------------------------------------------------------------------
+// Notice
+// ---------------------------------------------------------------------------
+
+.blm-notice {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    padding: 10px 16px;
+    border-radius: $radius;
+    margin-bottom: 16px;
+    font-size: 13px;
+
+    &--success {
+        background: #edfaef;
+        border-left: 4px solid $color-success;
+    }
+
+    &--error {
+        background: #fef0f0;
+        border-left: 4px solid $color-error;
+    }
+
+    &--info {
+        background: #e5f3fb;
+        border-left: 4px solid $color-info;
+    }
+
+    &__dismiss {
+        background: none;
+        border: none;
+        cursor: pointer;
+        font-size: 14px;
+        color: $color-subtle;
+        padding: 0;
+        line-height: 1;
+
+        &:hover {
+            color: $color-text;
+        }
+    }
+}
+
+// ---------------------------------------------------------------------------
+// Status badge
+// ---------------------------------------------------------------------------
+
+.blm-status-badge {
+    display: inline-block;
+    padding: 2px 8px;
+    border-radius: 20px;
+    font-size: 11px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.03em;
+
+    &--subscribed {
+        background: #edfaef;
+        color: $color-success;
+    }
+
+    &--unsubscribed {
+        background: #f0f0f0;
+        color: $color-subtle;
+    }
+
+    &--bounced {
+        background: #fef0f0;
+        color: $color-error;
+    }
+
+    &--complained {
+        background: #a8a8a8;
+        color: $color-error;
+    }
+
+    &--pending {
+        background: #fff8e5;
+        color: $color-warning;
+    }
+}
+
+// ---------------------------------------------------------------------------
+// Tags
+// ---------------------------------------------------------------------------
+
+.blm-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 4px;
+}
+
+.blm-tag {
+    display: inline-block;
+    padding: 1px 6px;
+    border-radius: 3px;
+    background: #e8eaf6;
+    color: #3949ab;
+    font-size: 11px;
+    font-weight: 500;
+}
+
+// ---------------------------------------------------------------------------
+// Import modal
+// ---------------------------------------------------------------------------
+
+.blm-import-modal {
+    .components-modal__content {
+        min-width: min(640px, 90vw);
+        max-width: 720px;
+    }
+}
+
+.blm-import {
+    &__steps {
+        display: flex;
+        gap: 16px;
+        margin-bottom: 24px;
+        padding-bottom: 16px;
+        border-bottom: 1px solid $color-border;
+        flex-wrap: wrap;
+    }
+
+    &__step-dot {
+        font-size: 12px;
+        font-weight: 600;
+        color: $color-subtle;
+        display: flex;
+        align-items: center;
+        gap: 6px;
+
+        &.is-active {
+            color: $color-primary;
+        }
+
+        &.is-done {
+            color: $color-success;
+        }
+    }
+    
+    &__defaults {
+        display: flex;
+        flex-direction: column;
+        gap: 20px;
+        padding: 20px;
+        border: 1px solid #ddd;
+        border-radius: 8px;
+        background: #fff;
+    }
+
+    &__audience {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 16px;
+    }
+
+
+    &__intro {
+        margin: 0 0 20px;
+        color: $color-subtle;
+        font-size: 13px;
+    }
+
+    &__dropzone {
+        border: 2px dashed $color-border;
+        border-radius: $radius-lg;
+        padding: 40px 24px;
+        text-align: center;
+        cursor: pointer;
+        transition: border-color 0.15s, background 0.15s;
+
+        &:hover,
+        &.is-dragging {
+            border-color: $color-primary;
+            background: #f0f3ff;
+        }
+
+        p {
+            margin: 4px 0;
+            font-size: 13px;
+            color: $color-text;
+        }
+    }
+
+    &__dropzone-icon {
+        font-size: 32px;
+        display: block;
+        margin-bottom: 8px;
+    }
+
+    &__dropzone-hint {
+        color: $color-subtle !important;
+        font-size: 12px !important;
+    }
+
+    &__loading {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        padding: 24px 0;
+        color: $color-subtle;
+        font-size: 13px;
+    }
+
+    &__error {
+        color: $color-error;
+        font-size: 13px;
+        margin: 12px 0 0;
+        padding: 8px 12px;
+        background: #fef0f0;
+        border-radius: $radius;
+    }
+
+    &__map-table {
+        border: 1px solid $color-border;
+        border-radius: $radius-lg;
+        overflow: hidden;
+        margin-bottom: 12px;
+    }
+
+    &__map-header {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 12px;
+        padding: 8px 14px;
+        background: $color-bg-hover;
+        border-bottom: 1px solid $color-border;
+        font-size: 12px;
+        font-weight: 600;
+        color: $color-subtle;
+        text-transform: uppercase;
+        letter-spacing: 0.04em;
+    }
+
+    &__map-row {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        align-items: center;
+        gap: 12px;
+        padding: 6px 14px;
+        border-bottom: 1px solid $color-border;
+
+        &:last-child {
+            border-bottom: none;
+        }
+
+        &.row-mapped {
+            background: #e8f3e8 !important;
+        }
+
+        .components-select-control__input {
+            height: 30px;
+            font-size: 13px;
+        }
+    }
+
+    &__map-col {
+        font-size: 13px;
+        font-weight: 500;
+        color: $color-text;
+        word-break: break-word;
+    }
+
+    &__tags-hint {
+        font-size: 12px;
+        color: $color-subtle;
+        margin: 0 0 20px;
+        font-style: italic;
+    }
+
+    &__footer {
+        display: flex;
+        justify-content: flex-end;
+        gap: 8px;
+        margin-top: 24px;
+        padding-top: 16px;
+        border-top: 1px solid $color-border;
+    }
+
+    // Result
+    &__result-summary {
+        display: flex;
+        gap: 16px;
+        margin-bottom: 24px;
+        flex-wrap: wrap;
+    }
+
+    &__result-stat {
+        flex: 1;
+        min-width: 100px;
+        text-align: center;
+        padding: 20px 16px;
+        border-radius: $radius-lg;
+        border: 1px solid $color-border;
+
+        &--imported {
+            border-color: $color-success;
+            background: #edfaef;
+        }
+
+        &--updated {
+            border-color: $color-info;
+            background: #e5f3fb;
+        }
+
+        &--skipped {
+            border-color: $color-warning;
+            background: #fff8e5;
+        }
+    }
+
+    &__result-num {
+        display: block;
+        font-size: 32px;
+        font-weight: 700;
+        line-height: 1;
+        margin-bottom: 4px;
+        color: $color-text;
+    }
+
+    &__skipped {
+        margin-bottom: 16px;
+
+        h3 {
+            font-size: 13px;
+            font-weight: 600;
+            margin: 0 0 10px;
+            color: $color-text;
+        }
+    }
+
+    &__skipped-table {
+        width: 100%;
+        border-collapse: collapse;
+        font-size: 12px;
+        border: 1px solid $color-border;
+        border-radius: $radius;
+        overflow: hidden;
+
+        th {
+            background: $color-bg-hover;
+            padding: 6px 10px;
+            text-align: left;
+            font-weight: 600;
+            color: $color-subtle;
+        }
+
+        td {
+            padding: 6px 10px;
+            border-top: 1px solid $color-border;
+            color: $color-text;
+            word-break: break-all;
+        }
+
+        tr:nth-child(even) td {
+            background: $color-bg-hover;
+        }
+    }
+}
+
+// ---------------------------------------------------------------------------
+// Responsive
+// ---------------------------------------------------------------------------
+
+@media (max-width: 782px) {
+    .blm-date-input {
+        width: 100%;
+    }
+
+    .blm-import__map-row,
+    .blm-import__map-header,
+    .blm-import__audience {
+        grid-template-columns: 1fr;
+    }
+
+    .blm-import__result-summary {
+        flex-direction: column;
+    }
+}
