@@ -1,6 +1,6 @@
 <?php
 
-namespace ChicpixiesBloomMailer;
+namespace ChicpixiesBloomMailer\Subscribers;
 
 if (! defined('ABSPATH')) {
 	exit;
@@ -65,7 +65,7 @@ class Unsubscribe
 		}
 
 		// Add to the suppression list so future sends (any campaign) skip this email
-		$subscriber = Bloom_Bridge::get_subscriber($subscriber_id);
+		$subscriber = BloomBridge::get_subscriber($subscriber_id);
 		if (! empty($subscriber->email)) {
 			Suppression::add(
 				$subscriber->email,
@@ -76,7 +76,7 @@ class Unsubscribe
 		}
 
 		// Unsubscribe in cps-bloom regardless — idempotent
-		Bloom_Bridge::unsubscribe($subscriber_id);
+		BloomBridge::unsubscribe($subscriber_id);
 
 		self::render_page(
 			__('You\'ve been unsubscribed', 'cps-bloom-mailer'),

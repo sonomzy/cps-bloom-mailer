@@ -1,7 +1,8 @@
 <?php
 
-namespace ChicpixiesBloomMailer;
-
+namespace ChicpixiesBloomMailer\Campaigns;
+use ChicpixiesBloomMailer\Subscribers\BloomBridge;
+use ChicpixiesBloomMailer\Subscribers\Suppression;
 use WP_Error;
 
 if (! defined('ABSPATH')) {
@@ -36,10 +37,10 @@ class Sender
         }
 
         // Fetch only id + email in one query, filtering to active subscribers only
-        $bloom_table = $wpdb->prefix . Bloom_Bridge::TABLE;
-        $id_col      = Bloom_Bridge::COL_ID;
-        $email_col   = Bloom_Bridge::COL_EMAIL;
-        $status_col  = Bloom_Bridge::COL_STATUS;
+        $bloom_table = $wpdb->prefix . BloomBridge::TABLE;
+        $id_col      = BloomBridge::COL_ID;
+        $email_col   = BloomBridge::COL_EMAIL;
+        $status_col  = BloomBridge::COL_STATUS;
 
         $placeholders = implode(',', array_fill(0, count($subscriber_ids), '%d'));
 
@@ -50,7 +51,7 @@ class Sender
                  FROM {$bloom_table}
                  WHERE {$id_col} IN ({$placeholders})
                    AND {$status_col} = %s",
-                ...[...$subscriber_ids, Bloom_Bridge::STATUS_ACTIVE]
+                ...[...$subscriber_ids, BloomBridge::STATUS_ACTIVE]
             )
         );
 
@@ -134,9 +135,9 @@ class Sender
 
         // Fall back to all active subscribers when no list/tag is configured
         if (empty($included)) {
-            return Bloom_Bridge::get_active_subscriber_ids();
+            return BloomBridge::get_active_subscriber_ids();
         }
 
-        return API::resolve_recipient_ids($included);
+        return BloomBridge::resolve_recipient_ids($included);
     }
 }

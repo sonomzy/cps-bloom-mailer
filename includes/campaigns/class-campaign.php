@@ -1,6 +1,7 @@
 <?php
 
-namespace ChicpixiesBloomMailer;
+namespace ChicpixiesBloomMailer\Campaigns;
+use ChicpixiesBloomMailer\Helpers;
 
 use WP_Error;
 

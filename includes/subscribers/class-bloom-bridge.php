@@ -1,10 +1,10 @@
 <?php
 
-namespace ChicpixiesBloomMailer;
+namespace ChicpixiesBloomMailer\Subscribers;
 
-use ChicpixiesBloom\Subscribers;
-use ChicpixiesBloom\Lists;
-use ChicpixiesBloom\Tags;
+use ChicpixiesBloom\Audience\Subscribers;
+use ChicpixiesBloom\Audience\Lists;
+use ChicpixiesBloom\Audience\Tags;
 
 if (! defined('ABSPATH')) {
 	exit;
@@ -15,7 +15,7 @@ if (! defined('ABSPATH')) {
  *
  * Update the table name and column mappings below to match
  */
-class Bloom_Bridge
+class BloomBridge
 {
 
 	/**
@@ -141,7 +141,6 @@ class Bloom_Bridge
 				'created_at' => current_time('mysql'),
 				'updated_at' => $data['created_at'] ?? current_time('mysql'),
 				'timezone'   => '',
-				'tags'       => [],
 			]);
 
 			// Check existence before save for accurate counting

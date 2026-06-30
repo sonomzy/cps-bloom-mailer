@@ -1,6 +1,6 @@
 <?php
 
-namespace ChicpixiesBloomMailer;
+namespace ChicpixiesBloomMailer\core;
 
 use Wp_Error;
 use Exception;

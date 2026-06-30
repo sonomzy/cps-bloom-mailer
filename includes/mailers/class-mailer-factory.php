@@ -1,21 +1,22 @@
 <?php
 
-namespace ChicpixiesBloomMailer;
+namespace ChicpixiesBloomMailer\Mailers;
+use ChicpixiesBloomMailer\Core\Settings;
 if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-class Mailer_Factory {
+class MailerFactory {
 
-	public static function make(): Mailer_Base {
+	public static function make(): MailerBase {
 		$mailer = Settings::get( 'mailer', 'smtp' );
 
 		switch ( $mailer ) {
 			case 'ses':
-				return new Mailer_SES();
+				return new MailerSES();
 			case 'smtp':
 			default:
-				return new Mailer_SMTP();
+				return new MailerSMTP();
 		}
 	}
 }

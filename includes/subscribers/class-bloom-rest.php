@@ -1,6 +1,6 @@
 <?php
 
-namespace ChicpixiesBloomMailer;
+namespace ChicpixiesBloomMailer\Subscribers;
 
 use WP_Error;
 
@@ -17,7 +17,7 @@ if (!defined('ABSPATH')) exit;
  * POST   /import                  - CSV upload + field map
  * GET    /filters                 - distinct sources, platforms, lists
  */
-class Bloom_Rest
+class BloomRest
 {
     public function __construct()
     {
@@ -133,14 +133,8 @@ class Bloom_Rest
             return new WP_Error('import_error', 'No data rows found in the CSV.', ['status' => 400]);
         }
 
-        $result = Bloom_Bridge::import_csv($rows, $map, $defaults);
+        $result = BloomBridge::import_csv($rows, $map, $defaults);
 
         return rest_ensure_response($result);
     }
-
-    public static function create_segment($request)
-    {
-        return Segments::create($request);
-    }
 }
-new Bloom_Rest();

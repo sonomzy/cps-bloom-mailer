@@ -1,6 +1,11 @@
 <?php
 
-namespace ChicpixiesBloomMailer;
+namespace ChicpixiesBloomMailer\Campaigns;
+use ChicpixiesBloomMailer\Subscribers\BloomBridge;
+use ChicpixiesBloomMailer\Subscribers\Unsubscribe;
+use ChicpixiesBloomMailer\Core\Settings;
+use ChicpixiesBloomMailer\Helpers;
+use ChicpixiesBloomMailer\Mailers\MailerFactory;
 
 if (! defined('ABSPATH')) {
 	exit;
@@ -16,9 +21,9 @@ class Queue
 		$batch_size  = intval(Settings::get('batch_size', 50));
 		$sends_table = $wpdb->prefix . 'cps_mailer_sends';
 		$campaigns_table = $wpdb->prefix . 'cps_mailer_campaigns';
-		$bloom_table     = $wpdb->prefix . Bloom_Bridge::TABLE;
-		$fname_col       = Bloom_Bridge::COL_FNAME;
-		$lname_col       = Bloom_Bridge::COL_LNAME;
+		$bloom_table     = $wpdb->prefix . BloomBridge::TABLE;
+		$fname_col       = BloomBridge::COL_FNAME;
+		$lname_col       = BloomBridge::COL_LNAME;
 
 		// JOIN bloom table for subscriber name data
 		$pending = $wpdb->get_results(
@@ -53,7 +58,7 @@ class Queue
 			return;
 		}
 
-		$mailer = Mailer_Factory::make();
+		$mailer = MailerFactory::make();
 		$failed_count  = 0;
 
 		foreach ($pending as $send) {

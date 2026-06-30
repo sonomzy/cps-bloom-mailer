@@ -5,7 +5,10 @@
  * 
  */
 
-namespace ChicpixiesBloomMailer;
+namespace ChicpixiesBloomMailer\Templates;
+use ChicpixiesBloomMailer\Core\Sanitize;
+use ChicpixiesBloomMailer\Helpers;
+use ChicpixiesBloomMailer\Campaigns\Campaign;
 
 use WP_Error;
 

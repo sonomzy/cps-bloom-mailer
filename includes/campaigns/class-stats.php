@@ -1,6 +1,7 @@
 <?php
 
-namespace ChicpixiesBloomMailer;
+namespace ChicpixiesBloomMailer\Campaigns;
+use ChicpixiesBloomMailer\Subscribers\BloomBridge;
 
 if (! defined('ABSPATH')) {
 	exit;
@@ -173,7 +174,7 @@ class Stats
 		unset($row);
 
 		// Subscriber growth from cps-bloom (last 30 days)
-		$subscriber_growth = Bloom_Bridge::get_growth_by_day(30);
+		$subscriber_growth = BloomBridge::get_growth_by_day(30);
 
 		return [
 			'total_campaigns'   => $total_campaigns,

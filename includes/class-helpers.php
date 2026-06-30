@@ -10,19 +10,6 @@ if (! defined('ABSPATH')) {
 }
 class Helpers
 {
-    /**
-     * Currency
-     * 
-     * @param string|null $code 'code'
-     * @return string woocommerce currency code or symbol
-     */
-    public static function currency($code = null)
-    {
-        $currency_code = get_woocommerce_currency();
-
-        return $code === 'code' ? $currency_code : get_woocommerce_currency_symbol($code);
-    }
-
     public static function formats($data)
     {
         $formats = [];

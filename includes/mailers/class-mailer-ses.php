@@ -1,12 +1,14 @@
 <?php
 
-namespace ChicpixiesBloomMailer;
+namespace ChicpixiesBloomMailer\Mailers;
+use ChicpixiesBloomMailer\Core\Settings;
 use WP_Error;
+
 if (! defined('ABSPATH')) {
     exit;
 }
 
-class Mailer_SES extends Mailer_Base
+class MailerSES extends MailerBase
 {
     private string $key;
     private string $secret;
@@ -88,7 +90,7 @@ class Mailer_SES extends Mailer_Base
 
         if ($code !== 200) {
             error_log('CPS Mailer SES error: HTTP ' . $code . ' - ' . wp_remote_retrieve_body($response));
-            return new \WP_Error('ses_error', wp_remote_retrieve_body($response), ['status' => $code]);
+            return new WP_Error('ses_error', wp_remote_retrieve_body($response), ['status' => $code]);
         }
 
         return true;

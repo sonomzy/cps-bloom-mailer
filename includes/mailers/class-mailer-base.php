@@ -1,11 +1,12 @@
 <?php
 
-namespace ChicpixiesBloomMailer;
+namespace ChicpixiesBloomMailer\Mailers;
+use ChicpixiesBloomMailer\Core\Settings;
 if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-abstract class Mailer_Base {
+abstract class MailerBase {
 
 	/**
 	 * Send an email.

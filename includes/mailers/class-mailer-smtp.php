@@ -1,14 +1,14 @@
 <?php
 
-namespace ChicpixiesBloomMailer;
-
+namespace ChicpixiesBloomMailer\Mailers;
+use ChicpixiesBloomMailer\Core\Settings;
 use WP_Error;
 
 if (! defined('ABSPATH')) {
 	exit;
 }
 
-class Mailer_SMTP extends Mailer_Base
+class MailerSMTP extends MailerBase
 {
 	protected ?string $from_email = null;
 	protected ?string $from_name  = null;
@@ -27,7 +27,7 @@ class Mailer_SMTP extends Mailer_Base
 			$isTo = !$to;
 			$isSub = !$subject;
 			$isHtml = !$html;
-			return new WP_Error('ses_error', "missing required data:Recipient:{$isTo}, Subject:{$isSub}, Html:{$isHtml}", ['status' => $code]);
+			return new WP_Error('ses_error', "missing required data:Recipient:{$isTo}, Subject:{$isSub}, Html:{$isHtml}", ['status' => 404]);
 		}
 
 		// Hook into wp_mail to set SMTP credentials

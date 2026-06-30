@@ -1,6 +1,6 @@
 <?php
 
-namespace ChicpixiesBloomMailer;
+namespace ChicpixiesBloomMailer\Subscribers;
 
 if (! defined('ABSPATH')) {
     exit;

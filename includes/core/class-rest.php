@@ -1,8 +1,21 @@
 <?php
 
-namespace ChicpixiesBloomMailer;
+namespace ChicpixiesBloomMailer\Core;
 
-use WP_REST_Request;
+use ChicpixiesBloomMailer\Helpers;
+use ChicpixiesBloomMailer\Campaigns\Stats;
+use ChicpixiesBloomMailer\Campaigns\Queue;
+use ChicpixiesBloomMailer\Campaigns\Sender;
+use ChicpixiesBloomMailer\Campaigns\Resend;
+use ChicpixiesBloomMailer\Campaigns\Parser;
+use ChicpixiesBloomMailer\Campaigns\Duplicator;
+use ChicpixiesBloomMailer\Campaigns\Campaign;
+use ChicpixiesBloomMailer\Templates\Templates;
+use ChicpixiesBloomMailer\Campaigns\Automation;
+use ChicpixiesBloomMailer\Mailers\MailerFactory;
+use ChicpixiesBloomMailer\Subscribers\Suppression;
+use ChicpixiesBloomMailer\Subscribers\BloomBridge;
+
 use Wp_Error;
 
 class Rest
@@ -353,7 +366,7 @@ class Rest
         $subject = Helpers::replace_tags($subject, $merge_data);
         $html = Helpers::replace_tags($html, $merge_data);
 
-        $mailer = Mailer_Factory::make();
+        $mailer = MailerFactory::make();
         $sent = $mailer->send(array(
             'to'      => $to,
             'subject' => '[Test] ' . $subject,
@@ -410,7 +423,7 @@ class Rest
      */
     public function get_lists($request)
     {
-        $lists =  Bloom_Bridge::get_lists();
+        $lists =  BloomBridge::get_lists();
         return rest_ensure_response($lists);
     }
 
@@ -419,7 +432,7 @@ class Rest
      */
     public function get_tags($request)
     {
-        $tags = Bloom_Bridge::get_tags();
+        $tags = BloomBridge::get_tags();
         return rest_ensure_response($tags);
     }
 
@@ -434,7 +447,7 @@ class Rest
         $recipients = $request->get_param('recipients');
 
         if (empty($recipients)) {
-            return rest_ensure_response(['count' => Bloom_Bridge::get_count()]);
+            return rest_ensure_response(['count' => BloomBridge::get_count()]);
         }
 
         $included = $recipients['included'] ?? [];
@@ -444,10 +457,10 @@ class Rest
         $included = array_filter($included, fn($r) => !empty($r['list']) || !empty($r['tag']));
         $excluded = array_filter($excluded, fn($r) => !empty($r['list']) || !empty($r['tag']));
 
-        $included_ids = Bloom_Bridge::resolve_recipient_ids(array_values($included));
+        $included_ids = BloomBridge::resolve_recipient_ids(array_values($included));
 
         if (!empty($excluded)) {
-            $excluded_ids = Bloom_Bridge::resolve_recipient_ids(array_values($excluded));
+            $excluded_ids = BloomBridge::resolve_recipient_ids(array_values($excluded));
             $included_ids = array_values(array_diff($included_ids, $excluded_ids));
         }
 
@@ -474,16 +487,16 @@ class Rest
         $included = array_filter($recipients['included'] ?? [], fn($r) => !empty($r['list']) || !empty($r['tag']));
         $excluded = array_filter($recipients['excluded'] ?? [], fn($r) => !empty($r['list']) || !empty($r['tag']));
 
-        $subscriber_ids = Bloom_Bridge::resolve_recipient_ids(array_values($included));
+        $subscriber_ids = BloomBridge::resolve_recipient_ids(array_values($included));
 
         // Nothing explicitly selected → send to all active subscribers
         if (empty($included)) {
-            $all = Bloom_Bridge::get_active_subscribers();
+            $all = BloomBridge::get_active_subscribers();
             $subscriber_ids = array_column(array_map(fn($s) => (array) $s, $all), 'id');
         }
 
         if (!empty($excluded)) {
-            $excluded_ids   = Bloom_Bridge::resolve_recipient_ids(array_values($excluded));
+            $excluded_ids   = BloomBridge::resolve_recipient_ids(array_values($excluded));
             $subscriber_ids = array_values(array_diff($subscriber_ids, $excluded_ids));
         }
 
@@ -819,4 +832,3 @@ class Rest
         return rest_ensure_response(['removed' => true, 'email' => $email]);
     }
 }
-new Rest();

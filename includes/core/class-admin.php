@@ -1,7 +1,11 @@
 <?php
 
-namespace ChicpixiesBloomMailer;
+namespace ChicpixiesBloomMailer\Core;
 
+use ChicpixiesBloomMailer\Helpers;
+use ChicpixiesBloomMailer\Campaigns\Campaign;
+use ChicpixiesBloomMailer\Campaigns\Stats;
+use ChicpixiesBloomMailer\Templates\Templates;
 use WP_Block_Editor_Context;
 
 if (! defined('ABSPATH')) {
@@ -15,8 +19,6 @@ class Admin
 		add_action('admin_menu', array($this, 'register_menus'));
 		add_action('init', [$this, 'register_blocks']);
 		add_action('admin_enqueue_scripts', array($this, 'enqueue_assets'));
-		add_action('wp_ajax_cps_mailer_get_stats', array($this, 'ajax_get_stats'));
-		add_action('wp_ajax_cps_mailer_get_overview', array($this, 'ajax_get_overview'));
 		add_action('in_admin_header', array($this, 'hide_notice'), 20);
 		add_filter('block_type_metadata', array($this, 'disable_advanced_tab'));
 		add_filter('wp_feed_cache_transient_lifetime', fn() => HOUR_IN_SECONDS * 6);
@@ -439,4 +441,3 @@ class Admin
 		return $data;
 	}
 }
-new Admin();

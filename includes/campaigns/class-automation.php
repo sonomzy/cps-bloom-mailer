@@ -1,6 +1,8 @@
 <?php
 
-namespace ChicpixiesBloomMailer;
+namespace ChicpixiesBloomMailer\Campaigns;
+
+use ChicpixiesBloomMailer\Subscribers\BloomBridge;
 
 use DateTime;
 use DateTimeZone;
@@ -53,7 +55,7 @@ class Automation
     public static function on_new_subscriber($subscriber)
     {
         if (is_numeric($subscriber)) {
-            $subscriber = Bloom_Bridge::get_subscriber(intval($subscriber));
+            $subscriber = BloomBridge::get_subscriber(intval($subscriber));
         }
 
         if (empty($subscriber)) {
@@ -110,7 +112,7 @@ class Automation
             }
 
             // For new_post/new_product we simply prepare the campaign and process queue
-            Sender::prepare($campaign->id);
+            Sender::prepare($campaign->id, []);
             self::dispatch_queue_processing();
         }
     }
@@ -238,7 +240,7 @@ class Automation
 
         // resolve subscriber email
         $subscriber = null;
-        $subscriber = Bloom_Bridge::get_subscriber($subscriber_id);
+        $subscriber = BloomBridge::get_subscriber($subscriber_id);
 
         if (empty($subscriber) || empty($subscriber->email)) {
             return;
@@ -295,7 +297,7 @@ class Automation
 
         // If campaign is draft, set scheduled
         if (in_array($campaign->status, ['draft', 'scheduled'], true)) {
-            Sender::prepare($campaign->id);
+            Sender::prepare($campaign->id, []);
             self::dispatch_queue_processing();
         }
 
@@ -315,10 +317,10 @@ class Automation
         $excluded = array_filter($recipients['excluded'] ?? [], fn($r) => !empty($r['list']) || !empty($r['tag']));
 
         // Resolve fresh at send time — more accurate than resolving at schedule time
-        $subscriber_ids = (new Api())->resolve_recipient_ids(array_values($included));
+        $subscriber_ids = BloomBridge::resolve_recipient_ids(array_values($included));
 
         if (!empty($excluded)) {
-            $excluded_ids   = (new Api())->resolve_recipient_ids(array_values($excluded));
+            $excluded_ids   = BloomBridge::resolve_recipient_ids(array_values($excluded));
             $subscriber_ids = array_values(array_diff($subscriber_ids, $excluded_ids));
         }
 

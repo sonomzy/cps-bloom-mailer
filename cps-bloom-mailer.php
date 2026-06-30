@@ -12,8 +12,7 @@
  * Text Domain: cps-bloom-mailer
  */
 
-use ChicpixiesBloomMailer\Mailer;
-use ChicpixiesBloomMailer\Installer;
+use ChicpixiesBloomMailer\Plugin;
 
 if (! defined('ABSPATH')) {
 	exit;
@@ -23,9 +22,13 @@ define('CPS_BLOOM_MAILER_VERSION', '1.0.0');
 define('CPS_BLOOM_MAILER_DIR', plugin_dir_path(__FILE__));
 define('CPS_BLOOM_MAILER_URL', plugin_dir_url(__FILE__));
 
-require_once CPS_BLOOM_MAILER_DIR . 'includes/class-mailer.php';
+if (! class_exists('ActionScheduler')) {
+	require_once CPS_BLOOM_MAILER_DIR . 'libraries/action-scheduler/action-scheduler.php';
+}
 
-register_activation_hook(__FILE__, array('ChicpixiesBloomMailer\\Mailer', 'activate'));
-register_deactivation_hook(__FILE__, array('ChicpixiesBloomMailer\\Mailer', 'deactivate'));
+require_once CPS_BLOOM_MAILER_DIR . 'includes/class-plugin.php';
 
-Mailer::instance();
+register_activation_hook(__FILE__, array('ChicpixiesBloomMailer\\Plugin', 'activate'));
+register_deactivation_hook(__FILE__, array('ChicpixiesBloomMailer\\Plugin', 'deactivate'));
+
+Plugin::instance();
